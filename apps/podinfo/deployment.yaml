@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+  namespace: podinfo
+spec:
+  selector:
+    matchLabels:
+      app: podinfo
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: podinfo
+    spec:
+      containers:
+        - image: ghcr.io/stefanprodan/podinfo:latest
+          imagePullPolicy: Always
+          name: podinfo
+          ports:
+            - containerPort: 9898    
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9898
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 9898
+            initialDelaySeconds: 5
+            periodSeconds: 5

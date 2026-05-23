@@ -1,0 +1,25 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo.htdom.lan
+  namespace: podinfo
+  annotations:
+    cert-manager.io/clusterissuer: htdom-sub-ca
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - podinfo.htdom.lan
+    secretName: podinfo-htdom-local-secret
+  rules:
+  - host: podinfo.htdom.lan
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo
+            port:
+              number: 9898

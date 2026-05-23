@@ -11,7 +11,7 @@
 Mit folgenden Befehlen wird der `Cert-Manager` in einem Kubernetes Cluster bereitgestellt.
 
 ```bash
-## Install (Uninstall) Kubernetes Cert-Manager
+## Install Kubernetes Cert-Manager
 ##
 helm repo add jetstack https://charts.jetstack.io --force-update
 helm install cert-manager jetstack/cert-manager \
@@ -21,7 +21,9 @@ helm install cert-manager jetstack/cert-manager \
   --set crds.enabled=true \
   --set crds.keep=true \
   --set startupapicheck.enabled=false
-# helm uninstall cert-manager -n cert-manager
+
+## Uninstall Kubernetes Cert-Manager
+helm uninstall cert-manager -n cert-manager
 
 kubectl get all -n cert-manager
 # NAME                                           READY   STATUS
@@ -44,10 +46,11 @@ kubectl logs -n cert-manager -l app=cert-manager -f
 ```
 
 Mit folgender YAML Konfiguration erstellen wir eine SelfSign Root-CA und eine Sub-CA Zertifizierungstelle.
-Dazu wird ein ***"kind: ClusterIssuer"*** benötigt, der für alle Namespace zur Verfügung steht. 
-Ein ***"kind: Issuer"*** ist nur für einen expliziten Namespace zuständig.
+Dazu wird ein `kind: ClusterIssuer` benötigt, der für alle Namespace zur Verfügung steht. 
+Ein `kind: Issuer` ist nur für einen expliziten Namespace zuständig.
 
 ## Root-CA ClusterIssuer
+
 ```yaml
 ---
 apiVersion: cert-manager.io/v1
@@ -60,6 +63,7 @@ spec:
 ```
 
 ### Root-CA Zertifikat
+
 ```yaml
 ---
 apiVersion: cert-manager.io/v1
@@ -98,6 +102,7 @@ spec:
 ```
 
 ## Sub-CA ClusterIssuer
+
 ```yaml
 ---
 apiVersion: cert-manager.io/v1
@@ -111,6 +116,7 @@ spec:
 ```
 
 ### Sub-CA Zertifikat
+
 ```yaml
 ---
 apiVersion: cert-manager.io/v1
