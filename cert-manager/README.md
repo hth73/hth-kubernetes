@@ -11,10 +11,17 @@
 Mit folgenden Befehlen wird der `Cert-Manager` in einem Kubernetes Cluster bereitgestellt.
 
 ```bash
-## Install Kubernetes Cert-Manager
+## Install (Uninstall) Kubernetes Cert-Manager
 ##
 helm repo add jetstack https://charts.jetstack.io --force-update
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.20.2 --set crds.enabled=true --set crds.keep=true
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.20.2 \
+  --set crds.enabled=true \
+  --set crds.keep=true \
+  --set startupapicheck.enabled=false
+# helm uninstall cert-manager -n cert-manager
 
 kubectl get all -n cert-manager
 # NAME                                           READY   STATUS
