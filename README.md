@@ -36,7 +36,7 @@ Ziel des Projekts ist es, praktische Erfahrungen mit Kubernetes, CoreOS, Contain
 Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kubernetes Client Konfigurationsdatei, diese wird dann im lokalen Verzeichnis unter `~/.kube/config` abgelegt. 
 
 ```bash
-## Kubernetes Client Konfigurationsdatei - Master Node
+## Kubernetes Client Konfigurationsdatei (API Zugriff) - Master Node
 ssh core@192.168.56.10 -p 22
 sudo cat /etc/rancher/k3s/k3s.yaml
 
@@ -126,6 +126,7 @@ ls -la
 # lrwxrwxrwx.   1 root root    7 May  8 16:10 bin -> usr/bin
 # ...
 
+## nginx Deployment und Service wieder löschen
 kubectl get deployment
 kubectl delete deployment nginx
 kubectl get deployment

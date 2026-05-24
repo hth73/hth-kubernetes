@@ -1,4 +1,4 @@
-# Kubernetes Cert-Manager
+# Cert-Manager
 
 <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" />
 
@@ -10,8 +10,9 @@
 
 Mit folgenden Befehlen wird der `Cert-Manager` in einem Kubernetes Cluster bereitgestellt.
 
+## Install Cert-Manager
+
 ```bash
-## Install Kubernetes Cert-Manager
 helm repo add jetstack https://charts.jetstack.io --force-update
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
@@ -21,9 +22,10 @@ helm install cert-manager jetstack/cert-manager \
   --set crds.keep=true \
   --set startupapicheck.enabled=false
 
-## Uninstall Kubernetes Cert-Manager
+## Uninstall Cert-Manager
 helm uninstall cert-manager -n cert-manager
 
+## Cert-Manager überprüfen
 kubectl get all -n cert-manager
 # NAME                                           READY   STATUS
 # pod/cert-manager-56d4c7dfb7-ft74l              1/1     Running
@@ -42,9 +44,9 @@ kubectl rollout restart deployment cert-manager -n cert-manager
 kubectl logs -n cert-manager -l app=cert-manager -f
 ```
 
-Mit folgender YAML Konfiguration erstellen wir eine SelfSign Root-CA und eine SelfSign Sub-CA Zertifizierungstelle.
-Dazu wird ein `kind: ClusterIssuer` benötigt, der für alle Namespace zur Verfügung steht. 
-Ein `kind: Issuer` ist nur für einen expliziten Namespace zuständig.
+Mit folgender YAML Konfiguration wird eine SelfSign Root-CA und Sub-CA Zertifizierungstelle angelegt.
+Dazu wird ein `kind: ClusterIssuer` benutzt, dieser steht dann für alle Namespaces zur Verfügung. 
+Ein `kind: Issuer` würde nur für einen expliziten Namespace zuständig sein.
 
 ## Root-CA ClusterIssuer
 
@@ -59,7 +61,7 @@ spec:
   selfSigned: {}
 ```
 
-### Root-CA Zertifikat
+#### Root-CA Zertifikat
 
 ```yaml
 ---
@@ -112,7 +114,7 @@ spec:
     secretName: htdom-sub-ca-secret
 ```
 
-### Sub-CA Zertifikat
+#### Sub-CA Zertifikat
 
 ```yaml
 ---
@@ -151,18 +153,52 @@ spec:
     kind: ClusterIssuer
 ```
 
-## Cert-Manger ausrollen und überprüfen
+## Root und Sub-CA ausrollen und überprüfen
+
 ```bash
-## Root und Sub-CA erstellen
-kubectl apply -f cert-manager/root_ca_cluster_issuer.yaml
+## Root und Sub-CA Configs einzeln ausrollen
+## Bitte Reihenfolge beim Rollout beachten!
+kubectl apply --filename='cert-manager/root_ca_cluster_issuer.yaml'
 kubectl apply -f cert-manager/root_ca_certificate.yaml
 kubectl apply -f cert-manager/sub_ca_cluster_issuer.yaml
 kubectl apply -f cert-manager/sub_ca_certificate.yaml
+```
 
-## Cert-Manager Installation überprüfen
+### Rollout mit Kustomization (strukturierter Deployment Flow)
+
+#### kustomization.yaml
+
+```yaml
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - root_ca_cluster_issuer.yaml
+  - root_ca_certificate.yaml
+  - sub_ca_cluster_issuer.yaml
+  - sub_ca_certificate.yaml
+```
+
+```bash
+kubectl apply --kustomize='cert-manager'
+# kubectl apply -k cert-manager
+```
+
+## Root und Sub-CA Bereitstellung überprüfen
+
+```bash
+## ClusterIssuer und Secrets anzeigen lassen
 kubectl get clusterissuers
 kubectl describe clusterissuers
 kubectl get secrets -n cert-manager
+
+## Secrets anzeigen lassen
+kubectl get secret htdom-root-ca-secret -n cert-manager -o yaml
+kubectl get secret htdom-sub-ca-secret -n cert-manager -o yaml
+
+## Bei Bedarf Server Zertifikat anzeigen lassen
+kubectl describe certificate podinfo.htdom.lan -n podinfo
 
 ## Zertifikate exportieren
 kubectl get secret htdom-root-ca-secret -n cert-manager -o jsonpath='{.data.tls\.crt}' | base64 --decode
@@ -176,11 +212,4 @@ openssl x509 -in htdom-sub-ca.crt -text -noout
 cat htdom-root-ca.crt htdom-sub-ca.crt > chain.crt
 openssl verify -CAfile htdom-root-ca.crt chain.crt
 # combined-chain.crt: OK
-
-## Secrets anzeigen lassen
-kubectl get secret htdom-root-ca-secret -n cert-manager -o yaml
-kubectl get secret htdom-sub-ca-secret -n cert-manager -o yaml
-
-## Server Zertifikat anzeigen lassen
-kubectl describe certificate podinfo.htdom.lan -n podinfo
 ```
