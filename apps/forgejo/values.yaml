@@ -1,0 +1,70 @@
+gitea:
+  admin:
+    existingSecret: forgejo-admin-secret
+    email: hth@htdom.lan
+
+  config:
+    APP_NAME: HTH
+    RUN_MODE: prod
+    APP_SLOGAN: Deploy at scale. Sleep at night.
+
+    server:
+      DOMAIN: git.htdom.lan
+      SSH_DOMAIN: git.htdom.lan
+      ROOT_URL: https://git.htdom.lan
+      DISABLE_SSH: false
+      SSH_PORT: 2222
+      SSH_LISTEN_PORT: 22
+      LFS_START_SERVER: true
+      OFFLINE_MODE: true
+
+    repository:
+      USE_COMPAT_SSH_URI: true
+
+    security:
+      INSTALL_LOCK: true
+      PASSWORD_HASH_ALGO: pbkdf2_hi
+      REVERSE_PROXY_LIMIT: 1
+      REVERSE_PROXY_TRUSTED_PROXIES: "*"
+
+    service:
+      DISABLE_REGISTRATION: true
+      REQUIRE_SIGNIN_VIEW: false
+      REGISTER_EMAIL_CONFIRM: false
+      ENABLE_NOTIFY_MAIL: false
+      DEFAULT_ALLOW_CREATE_ORGANIZATION: true
+
+    openid:
+      ENABLE_OPENID_SIGNIN: true
+      ENABLE_OPENID_SIGNUP: true
+
+    repository.pull-request:
+      DEFAULT_MERGE_STYLE: merge
+
+    repository.signing:
+      DEFAULT_TRUST_MODEL: committer
+
+    log:
+      LEVEL: Info
+
+ingress:
+  enabled: true
+  className: traefik
+
+  hosts:
+    - host: git.htdom.lan
+      paths:
+        - path: /
+          pathType: Prefix
+
+  tls:
+    - secretName: git-pki-secret
+      hosts:
+        - git.htdom.lan
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+postgresql:
+  enabled: false

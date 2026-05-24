@@ -11,7 +11,7 @@ spec:
   tls:
   - hosts:
     - podinfo.htdom.lan
-    secretName: podinfo-htdom-local-secret
+    secretName: podinfo-pki-secret
   rules:
   - host: podinfo.htdom.lan
     http:

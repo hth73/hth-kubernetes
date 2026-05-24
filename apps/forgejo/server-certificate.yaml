@@ -3,25 +3,25 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 
 metadata:
-  name: htdom-root-ca
-  namespace: cert-manager
+  name: git.htdom.lan
+  namespace: forgejo
 
 spec:
-  commonName: "htdom-root-ca"
-  secretName: "htdom-root-ca-secret" # root-ca secret
-  isCA: true
-  duration: 43830h   # 5 Years
-  renewBefore: 720h  # renewal 30 days before expires
+  dnsNames:
+    - git.htdom.lan
+  commonName: git.htdom.lan
+  secretName: git-pki-secret # server secret
+  duration: 2160h            # 90 days
+  renewBefore: 360h          # renewal 15 days before expires
+
+  usages:
+    - server auth
+
   privateKey:
     algorithm: ECDSA # or RSA oder ECDSA
     size: 256        # 2048 for RSA/256 for ECDSA
     encoding: PKCS8 
-    rotationPolicy: Never
-
-  usages:
-    - digital signature
-    - key encipherment
-    - cert sign
+    rotationPolicy: Always
 
   subject:
     organizations:
@@ -31,8 +31,9 @@ spec:
     countries:
       - "DE"         # (C) Country
     localities:
-      - "Muenchen"   # (L) Location
+      - "Munich"     # (L) Location
 
   issuerRef:
-    name: htdom-root-ca
+    name: htdom-sub-ca
     kind: ClusterIssuer
+    group: cert-manager.io

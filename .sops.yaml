@@ -1,0 +1,5 @@
+---
+creation_rules:
+  - path_regex: secrets/.*\.ya?ml$
+    encrypted_regex: '^(data|stringData|password|token|secret|ssh_keys)$'
+    age: age13kmzf9h8dzqj6casmj9yq5m2jk9hjr2y329tjjv4zr885q87u4uq4uwgv6

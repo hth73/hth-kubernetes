@@ -8,6 +8,7 @@
 
 * [Cert Manager](cert-manager/README.md)
 * [Podinfo Anwendung](apps/podinfo/README.md)
+* [Forgejo Anwendung](apps/forgejo/README.md)
 
 ---
 

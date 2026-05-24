@@ -67,34 +67,38 @@ spec:
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
+
 metadata:
   name: htdom-root-ca
   namespace: cert-manager
+
 spec:
   commonName: "htdom-root-ca"
   secretName: "htdom-root-ca-secret" # root-ca secret
   isCA: true
-  duration: 43830h # 5 Years
-  renewBefore: 720h # renewal 30 days before expires
+  duration: 43830h   # 5 Years
+  renewBefore: 720h  # renewal 30 days before expires
   privateKey:
+    algorithm: ECDSA # or RSA oder ECDSA
+    size: 256        # 2048 for RSA/256 for ECDSA
+    encoding: PKCS8 
     rotationPolicy: Never
-    algorithm: RSA
-    size: 4096
+
   usages:
-  - digital signature
-  - key encipherment
-  - cert sign
+    - digital signature
+    - key encipherment
+    - cert sign
+
   subject:
     organizations:
       - "HTDOM Inc." # (O) Organization
     organizationalUnits:
-      - "IT" # (OU) Organizational unit
+      - "Kubernetes" # (OU) Organizational unit
     countries:
-      - "DE" # (C) Country
+      - "DE"         # (C) Country
     localities:
-      - "Muenchen" # (L) Location
-    provinces:
-      - "Bayern" # (ST) Province
+      - "Muenchen"   # (L) Location
+
   issuerRef:
     name: htdom-root-ca
     kind: ClusterIssuer
@@ -120,34 +124,38 @@ spec:
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
+
 metadata:
   name: htdom-sub-ca
   namespace: cert-manager
+
 spec:
   commonName: "htdom-sub-ca"
-  secretName: "htdom-sub-ca-secret"
+  secretName: "htdom-sub-ca-secret" # sub-ca secret
   isCA: true
-  duration: 26280h # 3 Jahre
-  renewBefore: 720h # 30 Tage vor Ablauf erneuern
+  duration: 26280h   # 3 Years
+  renewBefore: 720h  # renewal 30 days before expires
   privateKey:
-    algorithm: RSA
-    size: 4096
+    algorithm: ECDSA # or RSA oder ECDSA
+    size: 256        # 2048 for RSA/256 for ECDSA
+    encoding: PKCS8 
     rotationPolicy: Always
+
   usages:
     - digital signature
     - key encipherment
     - cert sign
+
   subject:
     organizations:
       - "HTDOM Inc." # (O) Organization
     organizationalUnits:
-      - "IT" # (OU) Organizational unit
+      - "Kubernetes" # (OU) Organizational unit
     countries:
-      - "DE" # (C) Country
+      - "DE"         # (C) Country
     localities:
-      - "Muenchen" # (L) Location
-    provinces:
-      - "Bayern" # (ST) Province
+      - "Muenchen"   # (L) Location
+
   issuerRef:
     name: htdom-root-ca
     kind: ClusterIssuer
