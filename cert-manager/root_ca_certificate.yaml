@@ -26,9 +26,9 @@ spec:
     countries:
       - "DE" # (C) Country
     localities:
-      - "Munich" # (L) Location
+      - "Muenchen" # (L) Location
     provinces:
-      - "Bavaria" # (ST) Province
+      - "Bayern" # (ST) Province
   issuerRef:
     name: htdom-root-ca
     kind: ClusterIssuer

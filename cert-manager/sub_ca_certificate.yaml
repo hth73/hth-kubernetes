@@ -20,15 +20,15 @@ spec:
     - cert sign
   subject:
     organizations:
-      - "HTDOM Inc."
+      - "HTDOM Inc." # (O) Organization
     organizationalUnits:
-      - "IT"
+      - "IT" # (OU) Organizational unit
     countries:
-      - "DE"
+      - "DE" # (C) Country
     localities:
-      - "Munich"
+      - "Muenchen" # (L) Location
     provinces:
-      - "Bavaria"
+      - "Bayern" # (ST) Province
   issuerRef:
     name: htdom-root-ca
     kind: ClusterIssuer

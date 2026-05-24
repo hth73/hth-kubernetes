@@ -12,7 +12,6 @@ Mit folgenden Befehlen wird der `Cert-Manager` in einem Kubernetes Cluster berei
 
 ```bash
 ## Install Kubernetes Cert-Manager
-##
 helm repo add jetstack https://charts.jetstack.io --force-update
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
@@ -32,9 +31,7 @@ kubectl get all -n cert-manager
 # pod/cert-manager-webhook-5d74598b49-hbz9r      1/1     Running
 # ...
 
-## Debugging aktivieren, wenn nötig. - Wert wird von --v=2 auf --v=5 verändert.
-## Dadurch wird detailierter geloggt.
-##
+## Debugging bei Bedarf aktivieren. Wert wird von --v=2 auf --v=5 verändert. Dadurch wird detaillierter geloggt.
 kubectl edit deployment cert-manager -n cert-manager
 # spec:
 #   containers:
@@ -45,7 +42,7 @@ kubectl rollout restart deployment cert-manager -n cert-manager
 kubectl logs -n cert-manager -l app=cert-manager -f
 ```
 
-Mit folgender YAML Konfiguration erstellen wir eine SelfSign Root-CA und eine Sub-CA Zertifizierungstelle.
+Mit folgender YAML Konfiguration erstellen wir eine SelfSign Root-CA und eine SelfSign Sub-CA Zertifizierungstelle.
 Dazu wird ein `kind: ClusterIssuer` benötigt, der für alle Namespace zur Verfügung steht. 
 Ein `kind: Issuer` ist nur für einen expliziten Namespace zuständig.
 
@@ -93,9 +90,9 @@ spec:
     countries:
       - "DE" # (C) Country
     localities:
-      - "Munich" # (L) Location
+      - "Muenchen" # (L) Location
     provinces:
-      - "Bavaria" # (ST) Province
+      - "Bayern" # (ST) Province
   issuerRef:
     name: htdom-root-ca
     kind: ClusterIssuer
@@ -140,15 +137,15 @@ spec:
     - cert sign
   subject:
     organizations:
-      - "HTDOM Inc."
+      - "HTDOM Inc." # (O) Organization
     organizationalUnits:
-      - "IT"
+      - "IT" # (OU) Organizational unit
     countries:
-      - "DE"
+      - "DE" # (C) Country
     localities:
-      - "Munich"
+      - "Muenchen" # (L) Location
     provinces:
-      - "Bavaria"
+      - "Bayern" # (ST) Province
   issuerRef:
     name: htdom-root-ca
     kind: ClusterIssuer
@@ -156,25 +153,34 @@ spec:
 
 ## Cert-Manger ausrollen und überprüfen
 ```bash
+## Root und Sub-CA erstellen
 kubectl apply -f cert-manager/root_ca_cluster_issuer.yaml
 kubectl apply -f cert-manager/root_ca_certificate.yaml
 kubectl apply -f cert-manager/sub_ca_cluster_issuer.yaml
 kubectl apply -f cert-manager/sub_ca_certificate.yaml
 
+## Cert-Manager Installation überprüfen
 kubectl get clusterissuers
 kubectl describe clusterissuers
 kubectl get secrets -n cert-manager
 
+## Zertifikate exportieren
 kubectl get secret htdom-root-ca-secret -n cert-manager -o jsonpath='{.data.tls\.crt}' | base64 --decode
 kubectl get secret htdom-sub-ca-secret -n cert-manager -o jsonpath='{.data.tls\.crt}' | base64 --decode
 
+## Zertifikate überprüfen
 openssl x509 -in htdom-root-ca.crt -text -noout
 openssl x509 -in htdom-sub-ca.crt -text -noout
 
+## Zertifikat Chain bilden und überprüfen
 cat htdom-root-ca.crt htdom-sub-ca.crt > chain.crt
 openssl verify -CAfile htdom-root-ca.crt chain.crt
 # combined-chain.crt: OK
 
+## Secrets anzeigen lassen
+kubectl get secret htdom-root-ca-secret -n cert-manager -o yaml
 kubectl get secret htdom-sub-ca-secret -n cert-manager -o yaml
-# kubectl describe certificate kuard.htdom.local -n kuard
+
+## Server Zertifikat anzeigen lassen
+kubectl describe certificate podinfo.htdom.lan -n podinfo
 ```
