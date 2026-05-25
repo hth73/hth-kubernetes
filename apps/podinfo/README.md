@@ -1,4 +1,4 @@
-# Anwendung Podinfo
+# Podinfo Demo App
 
 <img src="https://img.shields.io/badge/podinfo-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" />
 

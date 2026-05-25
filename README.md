@@ -6,9 +6,10 @@
 
 ### Inhaltsverzeichnis
 
-* [Cert Manager](cert-manager/README.md)
-* [Podinfo Anwendung](apps/podinfo/README.md)
-* [Forgejo Anwendung](apps/forgejo/README.md)
+* [Cert Manager](infrastructure/cert-manager/README.md)
+* [Podinfo Demo App](apps/podinfo/README.md)
+* [PostgreSQL Server und TrueNAS ISCSI LUNs](apps/postgresql/README.md)
+* [Forgejo Git Server](apps/forgejo/README.md)
 
 ---
 
@@ -23,16 +24,17 @@ Der Fokus hier liegt auf:
 - Cert-manager & TLS
 - Traefik Ingress
 - Multi Node Networking
+- Storage Bereitstellung
 - GitOps Grundlagen
 
 Die Umgebung wurde vollständig automatisiert und basiert auf:<br>
 Packer, Vagrant und Ansible
 
 Das Kubernetes-Cluster besteht aus:
-- 1 Control Plane Node
+- 1 Control Plane Master Node
 - 2 Worker Nodes
 
-Ziel des Projekts ist es, praktische Erfahrungen mit Kubernetes, CoreOS, Container-Orchestrierung sowie automatisierter Infrastruktur-Provisionierung zu sammeln und typische Plattform-Komponenten schrittweise selbst aufzubauen.
+Ziel des Projekts ist es, praktische Erfahrungen mit Kubernetes, CoreOS, Container-Orchestrierung sowie automatisierter Infrastruktur Provisionierung zu sammeln und typische Plattform Komponenten schrittweise selbst aufzubauen.
 
 Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kubernetes Client Konfigurationsdatei, diese wird dann im lokalen Verzeichnis unter `~/.kube/config` abgelegt. 
 
@@ -82,7 +84,7 @@ kubectl get services
 # NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 # kubernetes   ClusterIP   10.43.0.1    <none>        443/TCP   18h
 
-# nginx pod anlegen und auf 3 pods erweitern
+# nginx demo pod anlegen und auf 3 pods erweitern
 kubectl create deployment nginx --image=nginx
 kubectl scale deployment nginx --replicas=3
 

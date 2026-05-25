@@ -1,12 +1,12 @@
-# Forgejo Git Server mit sqlite
+# Forgejo Git Server
 
-<img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&labelColor=ffffff&logoColor=003B57" />
+<img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/sops-3e484d?logo=gnuprivacyguard&logoColor=white&style=flat" />
 
 [Forgejo Helm Chart](https://code.forgejo.org/forgejo-helm/forgejo-helm)
 
 ---
 
-[Back to home](../../README.md)
+[PostgreSQL Server und TrueNAS ISCSI LUNs](../postgresql/README.md) - [Back to home](../../README.md)
 
 ---
 
