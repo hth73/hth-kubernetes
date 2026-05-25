@@ -70,6 +70,7 @@ gitea:
 
 ```bash
 helm install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo --create-namespace -f apps/forgejo/values.yaml
+# helm upgrade forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f apps/forgejo/values.yaml
 
 ## Server Zertifikat anlegen
 kubectl apply -f apps/forgejo/server-certificate.yaml
