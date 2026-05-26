@@ -29,7 +29,7 @@ helm repo add cnpg https://cloudnative-pg.github.io/charts --force-update
 helm repo update
 
 # --------------------------------------------------
-# cert-manager
+# Cert-Manager
 # --------------------------------------------------
 info "Installing cert-manager"
 helm upgrade --install cert-manager jetstack/cert-manager \
@@ -41,7 +41,7 @@ helm upgrade --install cert-manager jetstack/cert-manager \
   --set startupapicheck.enabled=false
 
 # --------------------------------------------------
-# CloudNativePG
+# CloudNativePG - PostgreSQL Operator for Kubernetes
 # --------------------------------------------------
 info "Installing CloudNativePG"
 helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
@@ -53,6 +53,12 @@ info "Waiting for cert-manager"
 kubectl rollout status deployment/cert-manager -n cert-manager --timeout=300s
 kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=300s
 kubectl rollout status deployment/cert-manager-cainjector -n cert-manager --timeout=300s
+
+# --------------------------------------------------
+# Create Root and Sub-CA
+# --------------------------------------------------
+info "Installing Root and Sub-CA"
+kubectl apply -k infrastructure/cert-manager
 
 # --------------------------------------------------
 # Wait for CNPG
