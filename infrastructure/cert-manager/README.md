@@ -1,4 +1,4 @@
-# Cert-Manager
+# Cert-Manager für Kubernetes
 
 <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" />
 
@@ -8,11 +8,15 @@
 
 ## Beschreibung
 
+Der `Cert-Manager` ist eine Cloud native Erweiterung für Kubernetes, die den gesamten Lebenszyklus von TLS/SSL-Zertifikaten automatisiert. 
+Er vereinfacht die Beantragung, Einrichtung, Nutzung und die rechtzeitige Erneuerung von Zertifikaten für Webanwendungen und Dienste.
+
 Mit folgenden Befehlen wird der `Cert-Manager` in einem Kubernetes Cluster bereitgestellt.
 
-## Install Cert-Manager
+## Cert-Manager Installation
 
 ```bash
+## Install Cert-Manager
 helm repo add jetstack https://charts.jetstack.io --force-update
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
@@ -189,8 +193,8 @@ resources:
 ```
 
 ```bash
-kubectl apply --kustomize='cert-manager'
-# kubectl apply -k cert-manager
+kubectl apply --kustomize='infrastructure/cert-manager'
+# kubectl apply -k infrastructure/cert-manager
 ```
 
 ## Root und Sub-CA Bereitstellung überprüfen
