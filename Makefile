@@ -27,7 +27,7 @@ deploy-postgresql:
 	sops -d ./secrets/forgejo-db-secret.yaml | kubectl apply -f -
 
 deploy-forgejo: deploy-postgresql
-    kubectl apply -f ./apps/forgejo/namespace.yml
+	kubectl apply -f ./apps/forgejo/namespace.yaml
 	sops -d ./secrets/forgejo-admin-secret.yaml | kubectl apply -f -
 	kubectl apply -f ./apps/forgejo/server-certificate.yaml
 	helm upgrade --install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f ./apps/forgejo/values.yaml
