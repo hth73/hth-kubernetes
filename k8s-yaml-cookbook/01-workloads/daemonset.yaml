@@ -1,0 +1,18 @@
+# Runs one Pod on each eligible Node (or each Node matching the selector/affinity).
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: <app-name>
+  namespace: <namespace>
+spec:
+  selector:
+    matchLabels:
+      app: <app-name>
+  template:
+    metadata:
+      labels:
+        app: <app-name>
+    spec:
+      containers:
+        - name: <container-name>
+          image: <image>:<tag>

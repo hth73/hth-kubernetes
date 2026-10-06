@@ -1,0 +1,11 @@
+# Reusable metadata examples. Add these under metadata on supported resources.
+metadata:
+  labels:
+    app.kubernetes.io/name: <app-name>
+    app.kubernetes.io/instance: <instance-name>
+    app.kubernetes.io/component: <component>
+    app.kubernetes.io/part-of: <application>
+    app.kubernetes.io/managed-by: <tool>
+  annotations:
+    description: "<short description>"
+    owner: "<team-or-owner>"

@@ -1,0 +1,24 @@
+# Requires an installed and configured Ingress controller.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: <ingress-name>
+  namespace: <namespace>
+spec:
+  ingressClassName: <ingress-class>
+  rules:
+    - host: <app.example.com>
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <service-name>
+                port:
+                  number: 80
+  # Optional TLS example:
+  # tls:
+  #   - hosts:
+  #       - <app.example.com>
+  #     secretName: <tls-secret-name>

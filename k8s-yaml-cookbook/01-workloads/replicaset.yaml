@@ -1,0 +1,19 @@
+# Usually managed by a Deployment; create directly only when you specifically need a ReplicaSet.
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: <app-name>
+  namespace: <namespace>
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: <app-name>
+  template:
+    metadata:
+      labels:
+        app: <app-name>
+    spec:
+      containers:
+        - name: <container-name>
+          image: <image>:<tag>

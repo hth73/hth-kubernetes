@@ -1,0 +1,18 @@
+# Pod spec fragment: add under spec.template.spec (Deployment/StatefulSet) or spec (Pod).
+# Define volumes and mount them into a container.
+volumes:
+  - name: app-config
+    configMap:
+      name: <configmap-name>
+  - name: app-data
+    persistentVolumeClaim:
+      claimName: <pvc-name>
+containers:
+  - name: <container-name>
+    image: <image>:<tag>
+    volumeMounts:
+      - name: app-config
+        mountPath: /etc/app
+        readOnly: true
+      - name: app-data
+        mountPath: /var/lib/app

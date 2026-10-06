@@ -4,12 +4,13 @@
   <img src="images/k8s_setup.png" width="50%" height="50%" />
 </p>
 
-<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Flux%20CD-5468FF?style=flat&logo=flux&labelColor=ffffff&logoColor=5468FF" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/CloudNativePG-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
+<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" />  <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/CloudNativePG-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
 ---
 
 ### Inhaltsverzeichnis
 
 * [Cert Manager](infrastructure/cert-manager/README.md)
+* [etcd - key-value store](infrastructure/etcd/README.md)
 * [Podinfo Demo App](apps/podinfo/README.md)
 * [PostgreSQL Server und TrueNAS ISCSI LUNs](apps/postgresql/README.md)
 * [Forgejo Git Server](apps/forgejo/README.md)
@@ -33,48 +34,31 @@ Der Fokus hier liegt auf:
 Die Umgebung wurde vollständig automatisiert und basiert auf:<br>
 Packer, Vagrant und Ansible
 
-Das Kubernetes-Cluster besteht aus:
-- 1 Control Plane Master Node
+Der Kubernetes-Cluster besteht aus:
+- 3 Control Plane Master Nodes mit embedded etcd
 - 2 Worker Nodes
 
-Ziel des Projekts ist es, praktische Erfahrungen mit Kubernetes, CoreOS, Container-Orchestrierung sowie automatisierter Infrastruktur Provisionierung zu sammeln und typische Plattform Komponenten schrittweise selbst aufzubauen.
+Ziel des Projekts ist es, praktische Erfahrungen mit Kubernetes, CoreOS, Container Orchestrierung sowie automatisierter Infrastruktur Provisionierung zu sammeln und typische Plattform Komponenten schrittweise selbst aufzubauen.
 
-Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kubernetes Client Konfigurationsdatei, diese wird dann im lokalen Verzeichnis unter `~/.kube/config` abgelegt. 
+Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kubernetes Client Konfigurationsdatei, diese wird dann im lokalen Verzeichnis unter `$HOME/.kube/config` abgelegt. 
 
 ```bash
-## Kubernetes Client Konfigurationsdatei (API Zugriff) - Master Node
-ssh core@192.168.56.10 -p 22
-sudo cat /etc/rancher/k3s/k3s.yaml
+# Kubernetes Client Konfigurationsdatei (API Zugriff) - Master Node
+ssh core@192.168.56.10 'sudo cat /etc/rancher/k3s/k3s.yaml' | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' > "$HOME/.kube/config"
 
-apiVersion: v1
-clusters:
-- cluster:
-    ...
-    server: https://127.0.0.1:6443
-  name: default
-...
-
-# ------------------------------
-
-vi ~/.kube/config
-
-apiVersion: v1
-clusters:
-- cluster:
-    ...
-    server: https://192.168.56.10:6443
-  name: default
-...
+cat "$HOME/.kube/config
 ```
 
 Danach kann man mit dem Tool `kubectl` oder `k9s` auf das Kubernetes Cluster zugreifen und die ersten Tests durchführen.
 
 ```bash
 kubectl get nodes        
-# NAME             STATUS   ROLES           AGE   VERSION
-# coreos-master    Ready    control-plane   18h   v1.35.5+k3s1
-# coreos-worker1   Ready    <none>          18h   v1.35.5+k3s1
-# coreos-worker2   Ready    <none>          18h   v1.35.5+k3s1
+# NAME             STATUS   ROLES                AGE   VERSION
+# coreos-master1   Ready    control-plane,etcd   20h   v1.36.5+k3s1
+# coreos-master2   Ready    control-plane,etcd   20h   v1.36.5+k3s1
+# coreos-master3   Ready    control-plane,etcd   19h   v1.36.5+k3s1
+# coreos-worker1   Ready    <none>               19h   v1.36.5+k3s1
+# coreos-worker2   Ready    <none>               19h   v1.36.5+k3s1
 
 kubectl get namespaces 
 # NAME              STATUS   AGE
@@ -140,4 +124,34 @@ kubectl get deployment
 kubectl get services
 kubectl delete svc nginx
 kubectl get services
+```
+
+Um die Anwendungen zu deployen wurde ein `Makefile`erstellt, der die installation erleichtert.
+
+```bash
+make Makefile help
+# Available targets:
+#   make all
+#   make bootstrap
+#   make export-ca-certs
+#   make deploy-podinfo
+#   make deploy-postgresql
+#  make deploy-forgejo
+
+make Makefile all
+
+kubectl get pods -A                               
+# NAMESPACE      NAME                                       READY   STATUS      RESTARTS        AGE
+# cert-manager   cert-manager-76ffbfcbfc-c7fjt              1/1     Running     1 (6h41m ago)   19h
+# cert-manager   cert-manager-cainjector-6468bc96c7-wh4mc   1/1     Running     1 (6h40m ago)   19h
+# cert-manager   cert-manager-webhook-558c6d4f4d-4t24r      1/1     Running     1 (6h41m ago)   19h
+# cnpg-system    cnpg-cloudnative-pg-968f678b8-mg96z        1/1     Running     1 (18h ago)     19h
+# forgejo        forgejo-59c66ffffd-mk7ql                   1/1     Running     1 (6h41m ago)   19h
+# kube-system    coredns-7cfb7bc9c7-jlf44                   1/1     Running     2 (6h42m ago)   20h
+# ...
+# kube-system    svclb-traefik-9e86a69a-zn6v4               2/2     Running     4 (6h42m ago)   20h
+# kube-system    traefik-7c8544f77-4x96m                    1/1     Running     2 (6h42m ago)   20h
+# podinfo        podinfo-54995fdf8f-64dww                   1/1     Running     1 (6h40m ago)   19h
+# podinfo        podinfo-54995fdf8f-fsvl4                   1/1     Running     1 (6h41m ago)   19h
+# postgresql     forgejo-postgres-1                         1/1     Running     1 (6h41m ago)   19h
 ```

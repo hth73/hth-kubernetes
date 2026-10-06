@@ -1,0 +1,3 @@
+# Pod spec fragment: simple hard node placement.
+nodeSelector:
+  kubernetes.io/hostname: <node-name>

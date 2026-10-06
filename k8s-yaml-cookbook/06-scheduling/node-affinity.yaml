@@ -1,0 +1,17 @@
+# Pod spec fragment: hard (required) or soft (preferred) node placement.
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - <node-name>
+    # preferredDuringSchedulingIgnoredDuringExecution:
+    #   - weight: 50
+    #     preference:
+    #       matchExpressions:
+    #         - key: <label-key>
+    #           operator: In
+    #           values: ["<label-value>"]

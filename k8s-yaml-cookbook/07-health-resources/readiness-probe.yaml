@@ -1,0 +1,8 @@
+# Container spec fragment. Not-ready Pods are removed from Service endpoints.
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: http
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 3

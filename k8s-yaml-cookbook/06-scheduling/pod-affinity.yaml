@@ -1,0 +1,12 @@
+# Pod spec fragment: co-locate or separate Pods based on labels and topology.
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values: ["<app-name>"]
+          topologyKey: kubernetes.io/hostname

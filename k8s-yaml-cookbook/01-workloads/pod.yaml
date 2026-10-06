@@ -1,0 +1,22 @@
+# Bare Pod reference. For most long-running workloads, prefer a Deployment or StatefulSet.
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: <pod-name>
+  namespace: <namespace>
+  labels:
+    app.kubernetes.io/name: <app-name>
+    app: <app-name>
+    environment: <dev, pro, tst>
+
+spec:
+  restartPolicy: Always
+  containers:
+    - name: <container-name>
+      image: <image>:<tag>
+      imagePullPolicy: IfNotPresent
+      ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP

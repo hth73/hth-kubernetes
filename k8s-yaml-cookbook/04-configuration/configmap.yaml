@@ -1,0 +1,11 @@
+# Non-sensitive configuration. Do not store passwords or tokens here.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <configmap-name>
+  namespace: <namespace>
+data:
+  APP_MODE: "production"
+  config.yaml: |
+    log_level: info
+    feature_flag: false

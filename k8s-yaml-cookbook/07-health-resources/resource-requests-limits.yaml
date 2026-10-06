@@ -1,0 +1,8 @@
+# Container spec fragment. Requests influence scheduling; limits constrain runtime usage.
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

@@ -1,0 +1,9 @@
+# Container spec fragment. Liveness failure restarts the container.
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3

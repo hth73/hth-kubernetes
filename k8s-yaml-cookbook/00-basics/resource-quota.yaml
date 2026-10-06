@@ -1,0 +1,14 @@
+# Namespace-level resource quota. Set requests/limits on Pods for CPU/memory quotas to apply.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: <quota-name>
+  namespace: <namespace>
+spec:
+  hard:
+    pods: "20"
+    requests.cpu: "4"
+    requests.memory: 8Gi
+    limits.cpu: "8"
+    limits.memory: 16Gi
+    persistentvolumeclaims: "10"

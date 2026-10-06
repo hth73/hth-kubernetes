@@ -1,0 +1,5 @@
+# Pod spec fragment: toleration permits scheduling despite a matching taint; it does not attract the Pod.
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule

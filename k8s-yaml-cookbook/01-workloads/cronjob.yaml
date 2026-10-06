@@ -1,0 +1,22 @@
+# Scheduled Job. Cron syntax uses the cluster controller's timezone (UTC by default).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: <cronjob-name>
+  namespace: <namespace>
+spec:
+  schedule: "0 2 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: <container-name>
+              image: <image>:<tag>
+              command: ["sh", "-c", "echo replace-with-task"]

@@ -1,0 +1,7 @@
+# Container-level security settings; add to a container definition.
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL

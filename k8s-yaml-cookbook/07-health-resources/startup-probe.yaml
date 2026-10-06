@@ -1,0 +1,7 @@
+# Container spec fragment. Startup probe delays liveness/readiness checks until startup succeeds.
+startupProbe:
+  httpGet:
+    path: /startup
+    port: http
+  periodSeconds: 10
+  failureThreshold: 30

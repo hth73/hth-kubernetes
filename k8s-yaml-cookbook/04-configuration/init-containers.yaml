@@ -1,0 +1,9 @@
+# Init containers run to completion before application containers start.
+# Add under spec.template.spec (Deployment/StatefulSet).
+initContainers:
+  - name: wait-for-dependency
+    image: busybox:1.36
+    command: ["sh", "-c", "until nc -z <service-name> 5432; do echo waiting; sleep 2; done"]
+containers:
+  - name: <app-container>
+    image: <image>:<tag>

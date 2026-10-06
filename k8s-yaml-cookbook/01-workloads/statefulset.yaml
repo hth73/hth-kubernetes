@@ -1,0 +1,32 @@
+# Stateful workload with stable Pod identities and per-replica PVCs.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: <app-name>
+  namespace: <namespace>
+spec:
+  serviceName: <headless-service-name>
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <app-name>
+  template:
+    metadata:
+      labels:
+        app: <app-name>
+    spec:
+      containers:
+        - name: <container-name>
+          image: <image>:<tag>
+          ports:
+            - name: app
+              containerPort: 8080
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: <storage-class>
+        resources:
+          requests:
+            storage: 10Gi

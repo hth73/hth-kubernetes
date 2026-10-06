@@ -1,0 +1,70 @@
+# Example stateful workload. A headless Service provides stable network identity.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stateful-demo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: stateful-demo
+spec:
+  clusterIP: None
+  selector:
+    app: database
+  ports:
+    - name: db
+      port: 5432
+      targetPort: db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+  namespace: stateful-demo
+spec:
+  serviceName: database
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: database
+          image: postgres:16
+          ports:
+            - name: db
+              containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-credentials
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: <storage-class>
+        resources:
+          requests:
+            storage: 10Gi
+---
+# Create this Secret separately; do not commit real credentials.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database-credentials
+  namespace: stateful-demo
+type: Opaque
+stringData:
+  password: "<replace-me>"

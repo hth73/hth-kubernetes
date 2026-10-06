@@ -1,0 +1,11 @@
+# Limits voluntary disruptions (e.g. drain); does not protect against node crashes.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: <pdb-name>
+  namespace: <namespace>
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: <app-name>

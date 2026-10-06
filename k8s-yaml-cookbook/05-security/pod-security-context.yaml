@@ -1,0 +1,9 @@
+# Pod-level security settings; place under spec.template.spec or Pod spec.
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault

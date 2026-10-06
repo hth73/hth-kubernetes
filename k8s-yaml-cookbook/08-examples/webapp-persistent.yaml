@@ -1,0 +1,43 @@
+# Web app with persistent data. Replace StorageClass and application image as needed.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: webapp-data
+  namespace: webapp
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: <storage-class>
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: web
+          image: <image>:<tag>
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/app
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: webapp-data

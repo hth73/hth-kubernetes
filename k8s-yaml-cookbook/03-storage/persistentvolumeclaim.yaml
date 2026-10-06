@@ -1,0 +1,13 @@
+# PVC requests storage in a namespace. Dynamic provisioning requires a matching StorageClass.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <pvc-name>
+  namespace: <namespace>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: <storage-class>
+  resources:
+    requests:
+      storage: 10Gi

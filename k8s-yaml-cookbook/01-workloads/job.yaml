@@ -1,0 +1,19 @@
+# Run-to-completion workload.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <job-name>
+  namespace: <namespace>
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 3600
+  template:
+    metadata:
+      labels:
+        job: <job-name>
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: <container-name>
+          image: <image>:<tag>
+          command: ["sh", "-c", "echo replace-with-task"]

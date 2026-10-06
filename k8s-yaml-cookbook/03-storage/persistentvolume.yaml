@@ -1,0 +1,17 @@
+# Static PV example. PV is cluster-scoped (no namespace).
+# The hostPath example is for disposable labs only; use suitable storage for production.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <pv-name>
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data/<pv-name>
+    type: DirectoryOrCreate

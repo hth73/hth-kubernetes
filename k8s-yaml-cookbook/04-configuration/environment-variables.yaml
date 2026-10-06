@@ -1,0 +1,17 @@
+# Pod spec fragment: add under spec.template.spec (Deployment/StatefulSet).
+containers:
+  - name: <container-name>
+    image: <image>:<tag>
+    env:
+      - name: LOG_LEVEL
+        value: "info"
+      - name: APP_MODE
+        valueFrom:
+          configMapKeyRef:
+            name: <configmap-name>
+            key: APP_MODE
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: <secret-name>
+            key: password
