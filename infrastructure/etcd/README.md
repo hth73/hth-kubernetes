@@ -1,4 +1,4 @@
-# etcd - key-value store
+# etcd - reliable key-value store
 
 <img src="https://img.shields.io/badge/etcd-419EDA?style=flat&logo=etcd&labelColor=ffffff&logoColor=419EDA" /> <img src="https://img.shields.io/badge/etcdctl-419EDA?style=flat&logo=etcd&labelColor=ffffff&logoColor=419EDA" /> <img src="https://img.shields.io/badge/etcdutl-419EDA?style=flat&logo=etcd&labelColor=ffffff&logoColor=419EDA" />
 
