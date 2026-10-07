@@ -4,6 +4,10 @@
 
 ---
 
+[Back to home](../../README.md)
+
+---
+
 ## Beschreibung
 
 `etcd` ist ein verteilter, fehlertoleranter Key-Value-Store (Schlüssel-Werte-Speicher), der in Kubernetes als primärer Datenspeicher für den gesamten Cluster-Zustand dient.
