@@ -4,7 +4,11 @@
 
 ---
 
-[Forgejo Git Server](../forgejo/README.md) - [Back to home](../../README.md)
+* [Forgejo Git Server](../forgejo/README.md)
+
+---
+
+[Back to home](../../README.md)
 
 ---
 

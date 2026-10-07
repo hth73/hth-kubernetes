@@ -4,7 +4,7 @@
 
 ---
 
-[Stefan Prodan - podinfo](https://github.com/stefanprodan/podinfo)
+* [Stefan Prodan - podinfo](https://github.com/stefanprodan/podinfo)
 
 ---
 

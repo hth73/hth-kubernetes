@@ -2,11 +2,14 @@
 
 <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/sops-3e484d?logo=gnuprivacyguard&logoColor=white&style=flat" />
 
-[Forgejo Helm Chart](https://code.forgejo.org/forgejo-helm/forgejo-helm)
+---
+
+* [Forgejo Helm Chart](https://code.forgejo.org/forgejo-helm/forgejo-helm)
+* [PostgreSQL Server und TrueNAS ISCSI LUNs](../postgresql/README.md)
 
 ---
 
-[PostgreSQL Server und TrueNAS ISCSI LUNs](../postgresql/README.md) - [Back to home](../../README.md)
+[Back to home](../../README.md)
 
 ---
 
