@@ -11,7 +11,8 @@
 
 * [Cert Manager](infrastructure/cert-manager/README.md)
 * [etcd - key-value store](infrastructure/etcd/README.md)
-* [Podinfo Demo App](apps/podinfo/README.md)
+* [Spring Petclinic Demo Application](apps/petclinic/README.md)
+* [Podinfo Demo Application](apps/podinfo/README.md)
 * [PostgreSQL Server und TrueNAS ISCSI LUNs](apps/postgresql/README.md)
 * [Forgejo Git Server](apps/forgejo/README.md)
 

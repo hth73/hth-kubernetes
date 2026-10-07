@@ -1,6 +1,8 @@
-# Podinfo Demo App
+# Podinfo Demo Application
 
 <img src="https://img.shields.io/badge/podinfo-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" />
+
+---
 
 [Stefan Prodan - podinfo](https://github.com/stefanprodan/podinfo)
 
