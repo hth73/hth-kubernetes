@@ -7,12 +7,19 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: <app-name>
+      name: <app-name>
   template:
     metadata:
       labels:
-        app: <app-name>
+        name: <app-name>
     spec:
       containers:
         - name: <container-name>
           image: <image>:<tag>
+          volumeMounts:
+          - name: <volume-name>
+            mountPath: /path
+      volumes:
+      - name: <volume-name>
+        hostPath:
+          path: /path

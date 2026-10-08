@@ -11,6 +11,7 @@
 
 * [Cert Manager](infrastructure/cert-manager/README.md)
 * [etcd - key-value store](infrastructure/etcd/README.md)
+* [Node Log Collector - DaemonSet](apps/node-log-collector/README.md)
 * [Spring Petclinic Demo Application](apps/petclinic/README.md)
 * [Podinfo Demo Application](apps/podinfo/README.md)
 * [PostgreSQL Server und TrueNAS ISCSI LUNs](apps/postgresql/README.md)
@@ -58,12 +59,12 @@ Danach kann man mit dem Tool `kubectl` oder `k9s` auf das Kubernetes Cluster zug
 
 ```bash
 kubectl get nodes        
-# NAME             STATUS   ROLES                AGE   VERSION
-# coreos-master1   Ready    control-plane,etcd   20h   v1.36.5+k3s1
-# coreos-master2   Ready    control-plane,etcd   20h   v1.36.5+k3s1
-# coreos-master3   Ready    control-plane,etcd   19h   v1.36.5+k3s1
-# coreos-worker1   Ready    <none>               19h   v1.36.5+k3s1
-# coreos-worker2   Ready    <none>               19h   v1.36.5+k3s1
+# NAME             STATUS   ROLES                AGE     VERSION
+# coreos-master1   Ready    control-plane,etcd   2d15h   v1.36.5+k3s1
+# coreos-master2   Ready    control-plane,etcd   2d15h   v1.36.5+k3s1
+# coreos-master3   Ready    control-plane,etcd   2d15h   v1.36.5+k3s1
+# coreos-worker1   Ready    worker               2d15h   v1.36.5+k3s1
+# coreos-worker2   Ready    worker               2d15h   v1.36.5+k3s1
 
 kubectl get namespaces 
 # NAME              STATUS   AGE

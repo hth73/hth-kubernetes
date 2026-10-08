@@ -21,6 +21,21 @@ info "Checking Kubernetes connection"
 kubectl get nodes
 
 # --------------------------------------------------
+# Worker node labeling
+# --------------------------------------------------
+kubectl get nodes -o name \
+  | grep '^node/coreos-worker' \
+  | while read -r node; do
+      kubectl label "$node" node-role.kubernetes.io/worker=true --overwrite
+    done
+
+# --------------------------------------------------
+# Node Log Collector
+# --------------------------------------------------
+info "Node Log Collector"
+kubectl apply -f apps/node-log-collector/daemonset.yaml
+
+# --------------------------------------------------
 # Helm repositories
 # --------------------------------------------------
 info "Adding Helm repositories"
@@ -40,11 +55,11 @@ helm upgrade --install cert-manager jetstack/cert-manager \
   --set crds.keep=true \
   --set startupapicheck.enabled=false
 
-# --------------------------------------------------
-# CloudNativePG - PostgreSQL Operator for Kubernetes
-# --------------------------------------------------
-info "Installing CloudNativePG"
-helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
+# # --------------------------------------------------
+# # CloudNativePG - PostgreSQL Operator for Kubernetes
+# # --------------------------------------------------
+# info "Installing CloudNativePG"
+# helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
 
 # --------------------------------------------------
 # Wait for deployments
@@ -60,11 +75,11 @@ kubectl rollout status deployment/cert-manager-cainjector -n cert-manager --time
 info "Installing Root and Sub-CA"
 kubectl apply -k infrastructure/cert-manager
 
-# --------------------------------------------------
-# Wait for CNPG
-# --------------------------------------------------
-info "Waiting for CloudNativePG"
-kubectl rollout status deployment/cnpg-cloudnative-pg -n cnpg-system --timeout=300s
+# # --------------------------------------------------
+# # Wait for CNPG
+# # --------------------------------------------------
+# info "Waiting for CloudNativePG"
+# kubectl rollout status deployment/cnpg-cloudnative-pg -n cnpg-system --timeout=300s
 
 # --------------------------------------------------
 # Finished

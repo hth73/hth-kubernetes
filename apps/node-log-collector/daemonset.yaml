@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: node-log-collector
+  namespace: kube-system
+
+spec:
+  selector:
+    matchLabels:
+      app: node-log-collector
+
+  template:
+    metadata:
+      labels:
+        app: node-log-collector
+
+    spec:
+      containers:
+        - name: log-collector
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Node Log Collector started"
+              echo "Node: ${NODE_NAME}"
+
+              tail -F /var/log/containers/*.log
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: container-logs
+              mountPath: /var/log/containers
+              readOnly: true
+            
+            - name: pod-logs
+              mountPath: /var/log/pods
+              readOnly: true
+
+      volumes:
+        - name: container-logs
+          hostPath:
+            path: /var/log/containers
+            type: Directory
+        
+        - name: pod-logs
+          hostPath:
+            path: /var/log/pods
+            type: Directory
