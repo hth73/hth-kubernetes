@@ -27,7 +27,7 @@ helm repo add jetstack https://charts.jetstack.io --force-update
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --version v1.20.2 \
+  --version v1.21.2 \
   --set crds.enabled=true \
   --set crds.keep=true \
   --set startupapicheck.enabled=false
@@ -174,7 +174,7 @@ spec:
 ## Root und Sub-CA ausrollen und überprüfen
 
 ```bash
-## Root und Sub-CA Configs einzeln ausrollen
+## Root und Sub-CA Konfigurationen einzeln ausrollen
 ## Bitte Reihenfolge beim Rollout beachten!
 kubectl apply --filename='cert-manager/root_ca_cluster_issuer.yaml'
 kubectl apply -f cert-manager/root_ca_certificate.yaml

@@ -39,12 +39,13 @@ chmod 644 "$HOME/.kube/master1-server-ca.crt"
 chmod 644 "$HOME/.kube/master1-client.crt"
 ```
 
-Um nicht bei jedem Befehl die Endpoints und Zertifikate mitgeben zu müssen, wurden entsprechende Umgebungsvariablen in `~/.zshrc` angelegt.
+Um nicht bei jedem Befehl die Endpoints und Zertifikate mitgeben zu müssen, wurden entsprechende Umgebungsvariablen in der `~/.zshrc` angelegt.
 
 ```bash
 vi ~/.zshrc
 
-# Alle drei Endpoints für Cluster-weite Operationen
+# Alle Endpoints für die Clusterweite Operationen
+# export ETCDCTL_ENDPOINTS="https://192.168.56.10:2379"
 export ETCDCTL_ENDPOINTS="https://192.168.56.10:2379,https://192.168.56.11:2379,https://192.168.56.12:2379"
 export ETCDCTL_CACERT="$HOME/.kube/master1-server-ca.crt"
 export ETCDCTL_CERT="$HOME/.kube/master1-client.crt"
@@ -55,11 +56,10 @@ source ~/.zshrc
 
 **Hinweis:** Für `etcdctl snapshot save` muss ein einzelner Endpoint verwendet werden. Daher wird vor dem Erstellen eines Snapshots die Variable `ETCDCTL_ENDPOINTS` auf einen einzelnen Endpoint gesetzt.
 
-Die passende etcd Service-Konfiguration findet man auf den Master-Servern unter folgendem Pfad:
+Die passende etcd Service Konfiguration findet man auf den Master Servern unter folgendem Pfad:
 
 ```bash
 ssh core@192.168.56.10 -p 22
-
 sudo cat /var/lib/rancher/k3s/server/db/etcd/config
 
 # advertise-client-urls: https://192.168.56.10:2379
@@ -92,7 +92,7 @@ sudo cat /var/lib/rancher/k3s/server/db/etcd/config
 #   reuse-port: true
 ```
 
-### Cluster Mitglieder anzeigen
+### Cluster Mitglieder abfragen
 
 ```bash
 etcdctl member list -w table
@@ -109,8 +109,8 @@ etcdctl member list -w table
 
 ```bash
 # Tabelle wurde gekürzt
-# etcdctl endpoint status -w table
 etcdctl endpoint status --write-out=table
+# etcdctl endpoint status -w table
 
 ENDPOINT             │   ID  │ VERSION │ STORAGE VER │ DB SIZE │ IN USE │ NOT IN USE │ QUOTA  │ LEADER │ LEARNER │ RAFT TERM │ RAFT INDEX │ RAFT APPLIED INDEX │ DOWNGRADE ENABLED
 ─────────────────────┼───────┼─────────┼─────────────┼─────────┼────────┼────────────┼────────┼────────┼─────────┼───────────┼────────────┼────────────────────┼───────────────────
@@ -139,7 +139,7 @@ etcdctl endpoint status --write-out=fields
 # "DowngradeEnabled" : false
 ```
 
-### Health Check
+### Health Check abfragen
 
 ```bash
 etcdctl endpoint health -w table
@@ -168,12 +168,12 @@ etcdutl snapshot status "$HOME/.kube/etcd-snapshot.db" -w table
 # └──────────┴──────────┴────────────┴────────────┴─────────┘
 ```
 
-### Hash-Wert vom Key-Value-Store (MVCC-Historie) ausgeben lassen
+### Hash Wert vom Key Value Store (MVCC) Multi Version Concurrency Control Historie ausgeben lassen
 
-Der Hash-Wert kann verwendet werden, um den logischen KV-Datenbestand verschiedener etcd-Mitglieder auf Konsistenz zu prüfen.
+Der Hash Wert kann verwendet werden, um den logischen (KV) Key Value Datenbestand verschiedener etcd Mitglieder auf Konsistenz zu prüfen.
 
 ```bash
-# Online
+# Online überprüfung
 etcdctl endpoint hashkv --cluster -w table
 # ┌────────────────────────────┬──────────┬───────────────┐
 # │          ENDPOINT          │   HASH   │ HASH REVISION │
@@ -183,7 +183,7 @@ etcdctl endpoint hashkv --cluster -w table
 # │ https://192.168.56.10:2379 │ 83008731 │        168288 │
 # └────────────────────────────┴──────────┴───────────────┘
 
-# Offline
+# Offline überprüfung
 etcdutl hashkv --write-out=table "$HOME/.kube/etcd-snapshot.db"
 # ┌──────────┬───────────────┬──────────────────┐
 # │   HASH   │ HASH REVISION │ COMPACT REVISION │
@@ -192,7 +192,7 @@ etcdutl hashkv --write-out=table "$HOME/.kube/etcd-snapshot.db"
 # └──────────┴───────────────┴──────────────────┘
 ```
 
-### Key-Values anzeigen
+### Key Values abfragen
 
 ```bash
 etcdctl get "" --prefix --keys-only | less
@@ -223,7 +223,7 @@ etcdctl get "/registry/nodes/coreos-master1" --print-value-only --write-out simp
 
 ### Alte Revisionen löschen
 
-Der Befehl `etcdctl compact` entfernt alte historische Revisionen aus dem etcd Key-Value-Store.
+Der Befehl `etcdctl compact` entfernt alte historische Revisionen aus dem etcd Key Value Store.
 
 ```text
 Also vereinfacht:
@@ -251,7 +251,7 @@ etcdctl compact "$rev"
 
 Der Befehl `etcdctl defrag` reorganisiert den physischen etcd-Backend-Speicher und gibt nicht mehr benötigten bzw. fragmentierten Speicherplatz innerhalb der Datenbank wieder frei.
 
-Die Defragmentierung ist von der MVCC-Compaction zu unterscheiden.
+Die Defragmentierung ist von der MVCC Compaction zu unterscheiden.
 
 ```bash
 etcdctl defrag
@@ -259,7 +259,7 @@ etcdctl defrag
 
 ### kubeadm-Cluster mit Static-Pod-etcd
 
-Bei einem kubeadm-Cluster wird etcd typischerweise als Static Pod betrieben.
+Bei einem kubeadm Cluster wird etcd typischerweise als Static Pod betrieben.
 
 ```bash
 cat /etc/kubernetes/manifests/etcd.yaml

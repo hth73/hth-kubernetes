@@ -20,7 +20,7 @@ Forgejo ist eine quelloffene, ressourcenschonende Plattform für die Softwareent
 ## Forgejo Helm Chart
 
 ```bash
-## Forgejo Helm Chart erforschen
+# Forgejo Helm Chart erforschen
 helm show values oci://code.forgejo.org/forgejo-helm/forgejo
 helm show values oci://code.forgejo.org/forgejo-helm/forgejo > values.yaml
 
@@ -33,7 +33,7 @@ global:
   hostAliases: []
   # - ip: 192.168.137.2
 
-## Forgejo Helm Chart gerendert ausgeben
+# Forgejo Helm Chart gerendert ausgeben
 helm template forgejo oci://code.forgejo.org/forgejo-helm/forgejo -f values.yaml > rendered.yaml
 
 cat rendered.yaml                                                      
@@ -49,7 +49,7 @@ metadata:
     app: forgejo
 ```
 
-## Meine values.yaml File
+## values.yaml File
 
 ```yaml
 gitea:
@@ -69,16 +69,16 @@ gitea:
 ...
 ```
 
-## Forgejo Server deployen
+## Forgejo Server ausrollen
 
 ```bash
 helm install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo --create-namespace -f apps/forgejo/values.yaml
 # helm upgrade forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f apps/forgejo/values.yaml
 
-## Server Zertifikat anlegen
+# Server Zertifikat anlegen
 kubectl apply -f apps/forgejo/server-certificate.yaml
 
-## Deployment überprüfen
+# Deployment überprüfen
 kubectl describe pod -n forgejo
 kubectl logs -n forgejo deploy/forgejo --tail=100
 kubectl get secret -n forgejo
@@ -99,19 +99,19 @@ curl -iv https://git.htdom.lan
 # https://getsops.io - https://github.com/getsops
 # --------------------------------------------------------------------------------
 cd /tmp
-wget https://github.com/getsops/sops/releases/download/v3.12.2/sops-v3.12.2.linux.amd64
-mv sops-v3.12.2.linux.amd64 ~/bin/sops
+wget https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
+mv sops-v3.13.3.linux.amd64 ~/bin/sops
 chmod +x ~/bin/sops
 
 sops --version --check-for-updates
-sops 3.12.2 (latest)
+sops 3.13.3 (latest)
 
 # --------------------------------------------------------------------------------
 # Set up sops with age and age-keygen
 # https://github.com/FiloSottile/age
 # --------------------------------------------------------------------------------
-wget https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-linux-amd64.tar.gz
-tar xvf age-v1.3.1-linux-amd64.tar.gz
+wget https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz
+tar xvf age-v1.3.2-linux-amd64.tar.gz
 mv age/age ~/bin
 mv age/age-keygen ~/bin
 
@@ -129,7 +129,7 @@ vi ~/.zshrc
 export SOPS_AGE_KEY_FILE="${HOME}/.sops/sops_key.txt"
 ```
 
-### Set up sops for Kubernetes
+### SOPS für Kubernetes konfigurieren
 
 ```bash
 ## Create a folder and a sops rule file

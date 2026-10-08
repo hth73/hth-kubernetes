@@ -35,6 +35,9 @@ Der Fokus hier liegt auf:
 Die Umgebung wurde vollständig automatisiert und basiert auf:<br>
 Packer, Vagrant und Ansible
 
+* [CoreOS Test Environment](https://github.com/hth73/hth-coreos)
+* [CoreOS Linux Unattended Installation with Packer, Vagrant and Ansible](https://github.com/hth73/hth-ansible-wks)
+
 Der Kubernetes-Cluster besteht aus:
 - 3 Control Plane Master Nodes mit embedded etcd
 - 2 Worker Nodes
@@ -45,7 +48,8 @@ Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kube
 
 ```bash
 # Kubernetes Client Konfigurationsdatei (API Zugriff) - Master Node
-ssh core@192.168.56.10 'sudo cat /etc/rancher/k3s/k3s.yaml' | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' > "$HOME/.kube/config"
+ssh core@192.168.56.10 'sudo cat /etc/rancher/k3s/k3s.yaml' | \
+sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' > "$HOME/.kube/config"
 
 cat "$HOME/.kube/config
 ```
@@ -82,7 +86,7 @@ kubectl get pods
 # nginx-56c45fd5ff-mvfvx   1/1     Running   1 (80m ago)   19h
 # nginx-56c45fd5ff-v8npb   1/1     Running   1 (18h ago)   19h
 
-kubectl describe svc nginx                 
+kubectl describe services nginx                 
 # Name:                     nginx
 # Namespace:                default
 # Labels:                   app=nginx
@@ -94,7 +98,7 @@ kubectl describe svc nginx
 
 kubectl expose deployment nginx --port=80 --type=NodePort
 
-kubectl get svc                                          
+kubectl get services                                          
 # NAME         TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
 # kubernetes   ClusterIP   10.43.0.1     <none>        443/TCP        19h
 # nginx        NodePort    10.43.39.44   <none>        80:30413/TCP   15s
@@ -123,11 +127,11 @@ kubectl delete deployment nginx
 kubectl get deployment
 
 kubectl get services
-kubectl delete svc nginx
+kubectl delete services nginx
 kubectl get services
 ```
 
-Um die Anwendungen zu deployen wurde ein `Makefile`erstellt, das die installation erleichtern soll.
+Um die restlichen Anwendungen zu deployen wurde ein `Makefile` erstellt, dies erleichtert die Installation der einzelnen Komponenten.
 
 ```bash
 make Makefile help
