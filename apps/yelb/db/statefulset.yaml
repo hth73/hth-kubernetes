@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yelb-db
+  namespace: yelb
+  labels:
+    app.kubernetes.io/name: yelb-db
+    app.kubernetes.io/component: db
+    app: yelb
+    environment: dev
+
+spec:
+  serviceName: yelb-db
+
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yelb-db
+      app.kubernetes.io/component: db
+
+  updateStrategy:
+    type: RollingUpdate
+    
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yelb-db
+        app.kubernetes.io/component: db
+        app: yelb
+        environment: dev
+
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+
+      containers:
+        - name: postgresql-container
+          image: docker.io/postgres:18.6
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: yelb-db-secret
+                  key: database
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: yelb-db-secret
+                  key: username
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yelb-db-secret
+                  key: password
+
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 768Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: yelb-pvc-worker1

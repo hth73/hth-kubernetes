@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yelb-pvc-worker1
+  namespace: yelb
+  labels:
+    app.kubernetes.io/name: yelb-db
+    app.kubernetes.io/component: db
+    app: yelb
+    environment: dev
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 20Gi

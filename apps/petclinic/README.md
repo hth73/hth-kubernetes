@@ -1,4 +1,4 @@
-# Spring Petclinic Demo Application
+# Petclinic Demo Application
 
 <img src="https://img.shields.io/badge/petclinic-6DB33F?style=flat&logo=spring&labelColor=ffffff&logoColor=6DB33F" />
 

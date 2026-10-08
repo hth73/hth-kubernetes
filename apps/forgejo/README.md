@@ -5,7 +5,7 @@
 ---
 
 * [Forgejo Helm Chart](https://code.forgejo.org/forgejo-helm/forgejo-helm)
-* [PostgreSQL Server und TrueNAS ISCSI LUNs](../postgresql/README.md)
+* [TrueNAS ISCSI LUNs](../../infrastructure/iscsi-storage/README.md)
 
 ---
 

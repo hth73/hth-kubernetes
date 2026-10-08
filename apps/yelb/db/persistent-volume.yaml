@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: yelb-pv-worker1
+  namespace: yelb
+  labels:
+    app.kubernetes.io/name: yelb-db
+    app.kubernetes.io/component: db
+    app: yelb
+    environment: dev
+
+spec:
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /var/lib/k8s-storage/postgres/yelb/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - coreos-worker1
