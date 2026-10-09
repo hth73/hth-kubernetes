@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yelb-redis
+  namespace: yelb
+  labels:
+    app.kubernetes.io/name: yelb-redis
+    app.kubernetes.io/component: cache
+    app: yelb
+    environment: dev
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yelb-redis
+      app.kubernetes.io/component: cache
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yelb-redis
+        app.kubernetes.io/component: cache
+        app: yelb
+        environment: dev
+
+    spec:
+      containers:
+        - name: redis-container
+          image: docker.io/redis:8.8.3
+          args:
+            - redis-server
+            - /redis-config/redis.conf
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: "1m"
+              memory: "32Mi"
+          volumeMounts:
+            - name: redis-config
+              mountPath: /redis-config
+              readOnly: true
+
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config

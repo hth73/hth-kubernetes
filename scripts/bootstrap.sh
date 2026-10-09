@@ -75,11 +75,12 @@ kubectl rollout status deployment/cert-manager-cainjector -n cert-manager --time
 info "Installing Root and Sub-CA"
 kubectl apply -k infrastructure/cert-manager
 
-# # --------------------------------------------------
-# # Wait for CNPG
-# # --------------------------------------------------
-# info "Waiting for CloudNativePG"
-# kubectl rollout status deployment/cnpg-cloudnative-pg -n cnpg-system --timeout=300s
+# --------------------------------------------------
+# Yelb secrets deployment
+# --------------------------------------------------
+info "Installing secrets"
+kubectl apply -f apps/yelb/namespace.yaml
+sops -d secrets/yelb-db-secret.yaml | kubectl apply -f -
 
 # --------------------------------------------------
 # Finished

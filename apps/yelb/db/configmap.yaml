@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yelb-db-init
+  namespace: yelb
+  labels:
+    app.kubernetes.io/name: yelb-db
+    app.kubernetes.io/component: db
+    app: yelb
+    environment: dev
+    
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS restaurants (
+        name CHAR(30) PRIMARY KEY,
+        count INTEGER
+    );
+
+    INSERT INTO restaurants (name, count) VALUES
+        ('outback', 0),
+        ('bucadibeppo', 0),
+        ('chipotle', 0),
+        ('ihop', 0)
+    ON CONFLICT (name) DO NOTHING;

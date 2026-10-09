@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yelb-appserver  
+  namespace: yelb
+  labels:
+    app.kubernetes.io/name: yelb-appserver
+    app.kubernetes.io/component: app
+    app: yelb
+    environment: dev
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yelb-appserver
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yelb-appserver
+        app.kubernetes.io/component: app
+        app: yelb
+        environment: dev
+    spec:
+      containers:
+        - name: yelb-app-container
+          image: docker.io/mreferre/yelb-appserver:0.7
+          ports:
+            - name: http
+              containerPort: 4567
+              protocol: TCP
+          env:
+            - name: RACK_ENV
+              value: "custom"
+            - name: REDIS_SERVER_ENDPOINT
+              value: "yelb-redis"
+            - name: YELB_DB_SERVER_ENDPOINT
+              value: "yelb-db"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

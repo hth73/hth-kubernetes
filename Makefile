@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic
+.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb
 
 help:
 	@echo "Available targets:"
@@ -9,10 +9,11 @@ help:
 	@echo "  make export-ca-certs"
 	@echo "  make deploy-podinfo"
 	@echo "  make deploy-petclinic"
+	@echo "  make deploy-yelb"
 # 	@echo "  make deploy-postgresql"
 # 	@echo "  make deploy-forgejo"
 
-all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic
+all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb
 
 bootstrap:
 	./scripts/bootstrap.sh
@@ -25,6 +26,9 @@ deploy-podinfo:
 
 deploy-petclinic:
 	kubectl apply -k ./apps/petclinic
+
+deploy-yelb:
+	kubectl apply -k ./apps/yelb
 
 # deploy-postgresql:
 # 	kubectl apply -k ./apps/postgresql
