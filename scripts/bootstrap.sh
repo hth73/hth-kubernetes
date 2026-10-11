@@ -32,8 +32,8 @@ kubectl get nodes -o name \
 # --------------------------------------------------
 # Node Log Collector
 # --------------------------------------------------
-info "Node Log Collector"
-kubectl apply -f apps/node-log-collector/daemonset.yaml
+# info "Node Log Collector"
+# kubectl apply -f apps/node-log-collector/daemonset.yaml
 
 # --------------------------------------------------
 # Helm repositories

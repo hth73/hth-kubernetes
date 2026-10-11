@@ -23,6 +23,10 @@ spec:
         app: yelb
         environment: dev
     spec:
+
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+        
       containers:
         - name: yelb-app-container
           image: docker.io/mreferre/yelb-appserver:0.7

@@ -71,7 +71,7 @@ spec:
               memory: 768Mi
           volumeMounts:
             - name: data
-              mountPath: /var/lib/postgresql
+              mountPath: /var/lib/postgresql/data
             - name: db-init
               mountPath: /docker-entrypoint-initdb.d
               readOnly: true

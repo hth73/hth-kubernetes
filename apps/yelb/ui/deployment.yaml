@@ -10,17 +10,22 @@ metadata:
     environment: dev
 
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: yelb-ui
       app.kubernetes.io/component: ui
+      
   template:
     metadata:
       labels:
         app.kubernetes.io/name: yelb-ui
         app.kubernetes.io/component: ui
+
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+
       containers:
         - name: yelb-ui
           image: docker.io/mreferre/yelb-ui:0.10
