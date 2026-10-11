@@ -16,7 +16,7 @@
   * [Petclinic Demo Application](apps/petclinic/README.md)
   * [Podinfo Demo Application](apps/podinfo/README.md)
   * [yelb Demo Application](apps/yelb/README.md)
-  * [Forgejo Git Server](apps/forgejo/README.md)
+  * [Forgejo Git Server](apps/forgejo/srv/README.md)
 
 ---
 

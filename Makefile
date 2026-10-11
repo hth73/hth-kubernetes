@@ -1,6 +1,8 @@
 SHELL=/bin/bash
 
-.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb
+export KUBECONFIG := $(HOME)/.kube/master1
+
+.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo
 
 help:
 	@echo "Available targets:"
@@ -10,10 +12,9 @@ help:
 	@echo "  make deploy-podinfo"
 	@echo "  make deploy-petclinic"
 	@echo "  make deploy-yelb"
-# 	@echo "  make deploy-postgresql"
-# 	@echo "  make deploy-forgejo"
+	@echo "  make deploy-forgejo"
 
-all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb
+all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo
 
 bootstrap:
 	./scripts/bootstrap.sh
@@ -30,12 +31,7 @@ deploy-petclinic:
 deploy-yelb:
 	kubectl apply -k ./apps/yelb
 
-# deploy-postgresql:
-# 	kubectl apply -k ./apps/postgresql
-# 	sops -d ./secrets/forgejo-db-secret.yaml | kubectl apply -f -
-
-# deploy-forgejo: deploy-postgresql
-# 	kubectl apply -f ./apps/forgejo/namespace.yaml
-# 	sops -d ./secrets/forgejo-admin-secret.yaml | kubectl apply -f -
-# 	kubectl apply -f ./apps/forgejo/server-certificate.yaml
-# 	helm upgrade --install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f ./apps/forgejo/values.yaml
+deploy-forgejo:
+	kubectl apply -k ./apps/forgejo/db
+	helm upgrade --install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f ./apps/forgejo/srv/values.yaml
+	kubectl apply -f ./apps/forgejo/srv/server-certificate.yaml

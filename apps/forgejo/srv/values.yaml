@@ -40,7 +40,7 @@ gitea:
             LEVEL: Info
         database:
             DB_TYPE: postgres
-            HOST: forgejo-postgres-rw.postgresql.svc.cluster.local:5432
+            HOST: forgejo-postgres-rw.forgejo.svc.cluster.local:5432
             NAME: forgejo
             USER: forgejo
             PASSWD: forgej0PWD!

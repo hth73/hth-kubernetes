@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/kubecfg.sh"
+kubecfg
+
 # --------------------------------------------------
 # Variables
 # --------------------------------------------------
@@ -55,11 +58,11 @@ helm upgrade --install cert-manager jetstack/cert-manager \
   --set crds.keep=true \
   --set startupapicheck.enabled=false
 
-# # --------------------------------------------------
-# # CloudNativePG - PostgreSQL Operator for Kubernetes
-# # --------------------------------------------------
-# info "Installing CloudNativePG"
-# helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
+# --------------------------------------------------
+# CloudNativePG - PostgreSQL Operator for Kubernetes
+# --------------------------------------------------
+info "Installing CloudNativePG"
+helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
 
 # --------------------------------------------------
 # Wait for deployments
@@ -78,9 +81,17 @@ kubectl apply -k infrastructure/cert-manager
 # --------------------------------------------------
 # Yelb secrets deployment
 # --------------------------------------------------
-info "Installing secrets"
+info "Installing yelb secrets"
 kubectl apply -f apps/yelb/namespace.yaml
 sops -d secrets/yelb-db-secret.yaml | kubectl apply -f -
+
+# --------------------------------------------------
+# forgejo secrets deployment
+# --------------------------------------------------
+info "Installing forgejo secrets"
+kubectl apply -f apps/forgejo/namespace.yaml
+sops -d secrets/forgejo-db-secret.yaml | kubectl apply -f -
+sops -d secrets/forgejo-admin-secret.yaml | kubectl apply -f -
 
 # --------------------------------------------------
 # Finished

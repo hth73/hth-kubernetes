@@ -3,5 +3,9 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: local-storage
+  labels:
+    app.kubernetes.io/name: forgejo-postgres
+    app: forgejo
+    environment: dev
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer

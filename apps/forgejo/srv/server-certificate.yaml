@@ -5,6 +5,10 @@ kind: Certificate
 metadata:
   name: git.htdom.lan
   namespace: forgejo
+  labels:
+    app.kubernetes.io/name: forgejo
+    app: forgejo  
+    environment: dev
 
 spec:
   dnsNames:
