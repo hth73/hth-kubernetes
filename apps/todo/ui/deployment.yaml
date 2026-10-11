@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-ui
+  namespace: todo
+  labels:
+    app.kubernetes.io/name: todo-ui
+    app.kubernetes.io/component: ui
+    app: todo
+    environment: dev
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-ui
+      app.kubernetes.io/component: ui
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: todo-ui
+        app.kubernetes.io/component: ui
+        app: todo
+        environment: dev
+    spec:
+
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+        
+      containers:
+        - name: todo-ui-container
+          image: docker.io/hellemon/docker-repo:todo-frontend-0.1.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REACT_APP_BACKEND_BASE_URI
+              value: "/api/items/"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

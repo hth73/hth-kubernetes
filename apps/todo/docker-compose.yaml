@@ -1,0 +1,14 @@
+services:
+  todo-backend:
+    image: docker.io/hellemon/docker-repo:todo-backend-0.1.0
+    container_name: todo-backend
+    build:
+      context: ./app/backend
+      dockerfile: backend.dockerfile
+
+  todo-frontend:
+    image: docker.io/hellemon/docker-repo:todo-frontend-0.1.2
+    container_name: todo-frontend
+    build:
+      context: ./ui/frontend
+      dockerfile: frontend.dockerfile

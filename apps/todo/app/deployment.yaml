@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: todo
+  labels:
+    app.kubernetes.io/name: todo-app
+    app.kubernetes.io/component: app
+    app: todo
+    environment: dev
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-app
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: todo-app
+        app.kubernetes.io/component: app
+        app: todo
+        environment: dev
+    spec:
+
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+        
+      containers:
+        - name: todo-app-container
+          image: docker.io/hellemon/docker-repo:todo-backend-0.1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PROJECT_NAME
+              value: "Todo API"
+              
+            - name: POSTGRES_SERVER
+              value: "todo-db"
+
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: database
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: username
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: password
+
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

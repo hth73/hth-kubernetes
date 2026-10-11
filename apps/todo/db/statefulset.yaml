@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-db
+  namespace: todo
+  labels:
+    app.kubernetes.io/name: todo-db
+    app.kubernetes.io/component: db
+    app: todo
+    environment: dev
+
+spec:
+  serviceName: todo-db
+
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-db
+      app.kubernetes.io/component: db
+
+  updateStrategy:
+    type: RollingUpdate
+    
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: todo-db
+        app.kubernetes.io/component: db
+        app: todo
+        environment: dev
+
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+
+      containers:
+        - name: postgresql-container
+          image: docker.io/postgres:15
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: database
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: username
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: password
+
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 768Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: todo-pvc-worker1

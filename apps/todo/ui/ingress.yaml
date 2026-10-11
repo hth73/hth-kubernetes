@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todo-ui
+  namespace: todo
+  labels:
+    app.kubernetes.io/name: todo-ui
+    app.kubernetes.io/component: ui
+    app: todo
+    environment: dev
+
+  annotations:
+    cert-manager.io/clusterissuer: htdom-sub-ca
+    
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - todo.htdom.lan
+    secretName: todo-pki-secret
+  rules:
+  - host: todo.htdom.lan
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-ui
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-app
+            port:
+              number: 80

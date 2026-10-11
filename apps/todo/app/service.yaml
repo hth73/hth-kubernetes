@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app
+  namespace: todo
+  labels:
+    app.kubernetes.io/name: todo-app
+    app.kubernetes.io/component: app
+    app: todo
+    environment: dev
+    
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: todo-app
+    app.kubernetes.io/component: app
