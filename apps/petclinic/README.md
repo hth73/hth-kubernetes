@@ -1,5 +1,9 @@
 # Petclinic Demo Application
 
+<p>
+  <img src="../../images/petclinic_demo_app.jpg" width="50%" height="50%" />
+</p>
+
 <img src="https://img.shields.io/badge/petclinic-6DB33F?style=flat&logo=spring&labelColor=ffffff&logoColor=6DB33F" />
 
 ---

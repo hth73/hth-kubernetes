@@ -13,10 +13,11 @@
 * [etcd - key-value store](infrastructure/etcd/README.md)
 * [Node Log Collector - DaemonSet](apps/node-log-collector/README.md)
 * [TrueNAS ISCSI LUNs](infrastructure/iscsi-storage/README.md)
+  * [Forgejo Git Server](apps/forgejo/srv/README.md)
   * [Petclinic Demo Application](apps/petclinic/README.md)
   * [Podinfo Demo Application](apps/podinfo/README.md)
   * [yelb Demo Application](apps/yelb/README.md)
-  * [Forgejo Git Server](apps/forgejo/srv/README.md)
+  * [Todo List Demo Application](apps/todo/README.md)
 
 ---
 

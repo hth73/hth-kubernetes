@@ -1,5 +1,9 @@
 # Podinfo Demo Application
 
+<p>
+  <img src="../../images/podinfo_demo_app.jpg" width="50%" height="50%" />
+</p>
+
 <img src="https://img.shields.io/badge/podinfo-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" />
 
 ---
