@@ -24,6 +24,9 @@ spec:
         environment: dev
 
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+        
       containers:
         - name: redis-container
           image: docker.io/redis:8.8.3
