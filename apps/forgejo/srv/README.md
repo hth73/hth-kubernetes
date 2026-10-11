@@ -4,9 +4,7 @@
   <img src="../../../images/forgejo_app.jpg" width="50%" height="50%" />
 </p>
 
-<img src="https://img.shields.io/badge/postgeSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" />
-<img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" />
-<img src="https://img.shields.io/badge/sops-3e484d?logo=gnuprivacyguard&logoColor=white&style=flat" />
+<img src="https://img.shields.io/badge/postgeSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/sops-3e484d?logo=gnuprivacyguard&logoColor=white&style=flat" />
 
 ---
 

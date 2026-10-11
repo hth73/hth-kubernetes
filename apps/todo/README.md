@@ -4,12 +4,7 @@
   <img src="../../images/todo_demo_app.jpg" width="50%" height="50%" />
 </p>
 
-<img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" />
-<img src="https://img.shields.io/badge/kustomize-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" />
-<img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&labelColor=ffffff&logoColor=61DAFB" />
-<img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&labelColor=ffffff&logoColor=3776AB" />
-<img src="https://img.shields.io/badge/postgeSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" />
-<img src="https://img.shields.io/badge/sops-3e484d?logo=gnuprivacyguard&logoColor=white&style=flat" />
+<img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" /> <img src="https://img.shields.io/badge/kustomize-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&labelColor=ffffff&logoColor=61DAFB" /> <img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&labelColor=ffffff&logoColor=3776AB" /> <img src="https://img.shields.io/badge/postgeSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/sops-3e484d?logo=gnuprivacyguard&logoColor=white&style=flat" />
 
 ---
 
