@@ -23,7 +23,8 @@ spec:
         app: todo
         environment: dev
     spec:
-
+      serviceAccountName: todo-app
+      
       nodeSelector:
         node-role.kubernetes.io/worker: "true"
         

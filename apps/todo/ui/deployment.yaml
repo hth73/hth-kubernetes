@@ -22,7 +22,9 @@ spec:
         app.kubernetes.io/component: ui
         app: todo
         environment: dev
+
     spec:
+      serviceAccountName: todo-ui
 
       nodeSelector:
         node-role.kubernetes.io/worker: "true"

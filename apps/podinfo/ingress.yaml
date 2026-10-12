@@ -6,6 +6,7 @@ metadata:
   namespace: podinfo
   annotations:
     cert-manager.io/clusterissuer: htdom-sub-ca
+
 spec:
   ingressClassName: traefik
   tls:
@@ -22,4 +23,5 @@ spec:
           service:
             name: podinfo
             port:
-              number: 9898
+              name: http
+

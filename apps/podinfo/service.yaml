@@ -6,8 +6,9 @@ metadata:
   namespace: podinfo
 spec:
   ports:
-  - port: 9898
-    targetPort: 9898
-    protocol: TCP
+    - name: http
+      port: 9898
+      targetPort: http
+      protocol: TCP
   selector:
     app: podinfo
