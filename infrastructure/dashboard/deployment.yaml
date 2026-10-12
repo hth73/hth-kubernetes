@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: dashboard
+  labels:
+    app.kubernetes.io/name: dashboard
+    app: dashboard
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: dashboard
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dashboard
+        app: dashboard
+
+    spec:
+      serviceAccountName: dashboard
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+
+      containers:
+        - name: headlamp
+          image: ghcr.io/headlamp-k8s/headlamp:v0.45.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "-in-cluster"
+            - "-plugins-dir=/headlamp/plugins"
+          env:
+            - name: HEADLAMP_CONFIG_SERVICE_NAME
+              value: "dashboard"
+            - name: HEADLAMP_CONFIG_SERVICE_VERSION
+              value: "v0.45.0"
+          ports:
+            - containerPort: 4466
+              name: http
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 4466
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 4466
+            initialDelaySeconds: 30
+            timeoutSeconds: 30

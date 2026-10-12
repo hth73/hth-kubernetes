@@ -94,6 +94,12 @@ sops -d secrets/forgejo-db-secret.yaml | kubectl apply -f -
 sops -d secrets/forgejo-admin-secret.yaml | kubectl apply -f -
 
 # --------------------------------------------------
+# Headlamp Kubernetes UI
+# --------------------------------------------------
+info "Headlamp Kubernetes UI"
+kubectl apply -k infrastructure/dashboard
+
+# --------------------------------------------------
 # Finished
 # --------------------------------------------------
 info "Bootstrap completed successfully"

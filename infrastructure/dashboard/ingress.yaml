@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboard
+  namespace: dashboard
+  labels:
+    app.kubernetes.io/name: dashboard
+    app: dashboard
+
+  annotations:
+    cert-manager.io/clusterissuer: htdom-sub-ca
+    
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - dashboard.htdom.lan
+    secretName: dashboard-pki-secret
+  rules:
+  - host: dashboard.htdom.lan
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dashboard
+            port:
+              name: http
