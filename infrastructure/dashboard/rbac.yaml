@@ -73,6 +73,17 @@ rules:
     resources: ["*"]
     verbs: ["get", "list", "watch"]
 
+# Clusterweite Lese-Rolle für developer über die Namespaces
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: developer-namespace-reader
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+
 ---
 # Rolle an Headlamp binden
 apiVersion: rbac.authorization.k8s.io/v1
@@ -122,12 +133,12 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: developers-edit
+  name: developer-edit
   namespace: todo
 subjects:
-  - kind: Group
-    name: developers
-    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: developer
+    namespace: todo
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -147,3 +158,18 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: edit
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: developer-namespace-reader
+subjects:
+  - kind: ServiceAccount
+    name: developer
+    namespace: todo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: developer-namespace-reader
+  

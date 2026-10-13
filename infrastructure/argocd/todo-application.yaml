@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: todo
+  namespace: argocd
+  
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/hth73/hth-kubernetes.git
+    targetRevision: main
+    path: apps/todo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: todo

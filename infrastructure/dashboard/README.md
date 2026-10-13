@@ -69,10 +69,11 @@ kubectl auth can-i patch deployments \
   --as=system:serviceaccount:dashboard:dashboard
 ```
 
-Create Access Token for the dashboard
+Create Access Token for the dashboard and developer Serviceaccount
 
 ```bash
 kubectl create token dashboard -n dashboard
+kubectl create token developer -n todo
 ```
 
 ## Notes
