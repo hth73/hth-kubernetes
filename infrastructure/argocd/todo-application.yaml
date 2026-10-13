@@ -1,11 +1,28 @@
 apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: todo
+  namespace: argocd
+spec:
+  description: Todo List Demo Application
+  sourceRepos:
+    - https://github.com/hth73/hth-kubernetes.git
+  destinations:
+    - name: in-cluster
+      namespace: todo
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+---
+apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: todo
   namespace: argocd
-  
 spec:
-  project: default
+  project: todo
   source:
     repoURL: https://github.com/hth73/hth-kubernetes.git
     targetRevision: main

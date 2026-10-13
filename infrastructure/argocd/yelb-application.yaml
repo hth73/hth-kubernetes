@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: yelb
+  namespace: argocd
+spec:
+  description: yelb Demo Application
+  sourceRepos:
+    - https://github.com/hth73/hth-kubernetes.git
+  destinations:
+    - name: in-cluster
+      namespace: yelb
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yelb
+  namespace: argocd 
+spec:
+  project: yelb
+  source:
+    repoURL: https://github.com/hth73/hth-kubernetes.git
+    targetRevision: main
+    path: apps/yelb
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: yelb

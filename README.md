@@ -4,7 +4,7 @@
   <img src="images/k8s_setup.jpg" width="50%" height="50%" />
 </p>
 
-<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/CloudNativePG-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
+<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Headlamp-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/CloudNativePG-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
 ---
 
 ### Inhaltsverzeichnis
@@ -13,6 +13,7 @@
 * [etcd - key-value store](infrastructure/etcd/README.md)
 * [Node Log Collector - DaemonSet](apps/node-log-collector/README.md)
 * [Headlamp Kubernetes UI](infrastructure/dashboard/README.md)
+* [Argo CD – GitOps im Kubernetes](infrastructure/argocd/README.md)
 * [Popeye Kubernetes Live Cluster Linter](infrastructure/popeye/README.md)
 * [TrueNAS ISCSI LUNs](infrastructure/iscsi-storage/README.md)
   * [Forgejo Git Server](apps/forgejo/srv/README.md)
