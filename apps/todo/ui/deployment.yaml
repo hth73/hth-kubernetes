@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/component: ui
     app: todo
     environment: dev
+    gitops-test: "true"
 
 spec:
   replicas: 1
