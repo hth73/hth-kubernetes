@@ -47,7 +47,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          image: docker.io/hellemon/docker-repo:todo-frontend-0.1.3
+          image: docker.io/hellemon/docker-repo:todo-frontend-0.1.4
           imagePullPolicy: IfNotPresent
           env:
             - name: REACT_APP_BACKEND_BASE_URI
