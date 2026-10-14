@@ -1,111 +1,214 @@
-import React from "react"
+import React from "react";
 import TodosList from "./TodosList";
-import Header from "./Header"
-import InputTodo from "./InputTodo"
+import Header from "./Header";
+import InputTodo from "./InputTodo";
 
-let base_url = window._env_.REACT_APP_BACKEND_BASE_URI
-console.log("Original base_url URI: ")
-console.log(base_url)
-if (!(base_url.endsWith("/"))){
-    base_url = base_url + "/";
+function getApiBaseUrl() {
+    const configuredUrl = window._env_?.REACT_APP_BACKEND_BASE_URI;
+    if (!configuredUrl) {
+        throw new Error("The backend URL is not configured.");
+    }
+
+    return new URL(configuredUrl, window.location.origin).toString().replace(/\/?$/, "/");
 }
-if (base_url.startsWith('/')) {
-    base_url = window.location.origin + base_url;
-} else if (!base_url.startsWith('http')) {
-    base_url = window.location.protocol + "//" + base_url;
-}
-console.log("Backend API URI: ")
-console.log(base_url)
 
 class TodoContainer extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            todos: []
-        }
-    }
+    state = {
+        todos: [],
+        isLoading: true,
+        error: "",
+        searchQuery: "",
+        filter: "all",
+    };
 
     componentDidMount() {
-        fetch(base_url)
-            .then(response => response.json())
-            .then(data => this.setState({todos: data})).catch(console.error);
+        this.loadTodos();
     }
 
-    handleChange = (id) => {
-        console.log("clicked", id);
+    request = async (path, options = {}) => {
+        let response;
+        try {
+            response = await fetch(new URL(path, getApiBaseUrl()), options);
+        } catch {
+            throw new Error("Could not connect to the backend. Check your connection and try again.");
+        }
 
-        // Pass previous state and invert it
-        this.setState(prevState => ({
-            todos: prevState.todos.map(todo => {
-                if (todo.id === id) {
-
-                    let c_todo = {
-                        ...todo, checked: !todo.checked,
-                    }
-                    console.log(JSON.stringify({
-                        checked: c_todo.checked,
-                    }))
-                    // Update checked parameter
-                    fetch(base_url + todo.id, {
-                        method: "PUT", body: JSON.stringify({
-                            checked: c_todo.checked,
-                        }) // TODO: ????
-                    }).catch(console.error);
-
-                    return c_todo
+        const responseBody = await response.text();
+        let data = null;
+        if (responseBody.trim()) {
+            try {
+                data = JSON.parse(responseBody);
+            } catch {
+                if (response.ok) {
+                    throw new Error("The backend returned an invalid response.");
                 }
-                return todo
-            }),
-        }))
+            }
+        }
+
+        if (!response.ok) {
+            const detail = data && typeof data.detail === "string" ? ` ${data.detail}` : "";
+            throw new Error(`The backend request failed (HTTP ${response.status}).${detail}`);
+        }
+
+        return data;
     };
 
-    delTodo = id => {
-        console.log("deleted", id);
-        fetch(base_url + id, {
-            method: "DELETE"
-        }).then(response => response.json()).catch(console.error);
-
-        this.setState({
-            todos: [...this.state.todos.filter(todo => {
-                return todo.id !== id;
-            })]
-        });
+    loadTodos = async () => {
+        this.setState({isLoading: true, error: ""});
+        try {
+            const todos = await this.request("");
+            if (todos !== null && !Array.isArray(todos)) {
+                throw new Error("The backend returned an invalid task list.");
+            }
+            this.setState({todos: todos || []});
+        } catch (error) {
+            this.setState({error: error.message});
+        } finally {
+            this.setState({isLoading: false});
+        }
     };
 
-    addTodoItem = title => {
-        console.log(title);
+    saveTodo = async (title) => {
+        try {
+            const todo = await this.request("", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({title, checked: false}),
+            });
+            if (todo === null) {
+                await this.loadTodos();
+                return true;
+            }
+            this.setState(previousState => ({
+                todos: [...previousState.todos, todo],
+                error: "",
+            }));
+            return true;
+        } catch (error) {
+            this.setState({error: `Could not add the task. ${error.message}`});
+            return false;
+        }
+    };
 
-        console.log("" + JSON.stringify({
-            title: title,
-            checked: false,
-        }))
+    updateTodo = async (id, changes) => {
+        try {
+            const todo = await this.request(String(id), {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(changes),
+            });
+            this.setState(previousState => ({
+                todos: previousState.todos.map(item => item.id === id
+                    ? {...item, ...changes, ...(todo || {})}
+                    : item),
+                error: "",
+            }));
+            return true;
+        } catch (error) {
+            this.setState({error: `Could not update the task. ${error.message}`});
+            return false;
+        }
+    };
 
-        // Make request to BE and receive ID
-        fetch(base_url, {
-            method: "POST", body: JSON.stringify({ // | b'{"title":"Heeeyy","checked":false}'
-                title: title,
-                checked: false,
-            })
-        })
-            .then(response => response.json())
-            .then(newTodo => this.setState(prevState => ({
-                todos: [...prevState.todos, newTodo]
+    deleteTodo = async (id) => {
+        try {
+            await this.request(String(id), {method: "DELETE"});
+            this.setState(previousState => ({
+                todos: previousState.todos.filter(todo => todo.id !== id),
+                error: "",
+            }));
+            return true;
+        } catch (error) {
+            this.setState({error: `Could not delete the task. ${error.message}`});
+            return false;
+        }
+    };
 
-            }))).catch(console.error);
+    setSearchQuery = (event) => {
+        this.setState({searchQuery: event.target.value});
+    };
+
+    setFilter = (filter) => {
+        this.setState({filter});
     };
 
     render() {
-        return (<div id="div-todoslist">
-            <Header/>
-            <InputTodo addTodoProps={this.addTodoItem}/>
-            <TodosList todos={this.state.todos}
-                       handleChangeProps={this.handleChange}
-                       deleteTodoProps={this.delTodo}/>
-            <hr/>
-        </div>);
+        const {todos, isLoading, error, searchQuery, filter} = this.state;
+        const visibleTodos = todos.filter(todo => {
+            const matchesSearch = todo.title.toLowerCase().includes(searchQuery.trim().toLowerCase());
+            const matchesFilter = filter === "all"
+                || (filter === "open" && !todo.checked)
+                || (filter === "completed" && todo.checked);
+            return matchesSearch && matchesFilter;
+        });
+        const openCount = todos.filter(todo => !todo.checked).length;
+
+        return (
+            <main className="todo-app">
+                <Header/>
+                <section aria-label="Tasks">
+                    <InputTodo addTodoProps={this.saveTodo}/>
+
+                    <div className="todo-toolbar">
+                        <label className="search-field">
+                            <span className="sr-only">Search tasks</span>
+                            <input
+                                type="search"
+                                placeholder="Search tasks"
+                                value={searchQuery}
+                                onChange={this.setSearchQuery}
+                            />
+                        </label>
+                        <div className="filter-list" role="group" aria-label="Filter tasks">
+                            {[
+                                ["all", "All"],
+                                ["open", "Open"],
+                                ["completed", "Completed"],
+                            ].map(([value, label]) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    className={`filter-button${filter === value ? " is-active" : ""}`}
+                                    aria-pressed={filter === value}
+                                    onClick={() => this.setFilter(value)}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <p className="task-count" aria-live="polite">
+                        {openCount} {openCount === 1 ? "task" : "tasks"} left
+                    </p>
+
+                    {error && (
+                        <div className="error-message" role="alert">
+                            <span>{error}</span>
+                            <button type="button" className="text-button" onClick={this.loadTodos}>
+                                Retry
+                            </button>
+                        </div>
+                    )}
+                    {isLoading ? (
+                        <p className="empty-state" role="status">Loading tasks…</p>
+                    ) : visibleTodos.length > 0 ? (
+                        <TodosList
+                            todos={visibleTodos}
+                            updateTodoProps={this.updateTodo}
+                            deleteTodoProps={this.deleteTodo}
+                        />
+                    ) : (
+                        <p className="empty-state">
+                            {todos.length === 0
+                                ? "No tasks yet. Add your first task above."
+                                : "No tasks match your search or filter."}
+                        </p>
+                    )}
+                </section>
+            </main>
+        );
     }
 }
 
-export default TodoContainer
+export default TodoContainer;

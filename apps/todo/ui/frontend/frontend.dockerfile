@@ -1,5 +1,5 @@
 # => Build container
-FROM --platform=$BUILDPLATFORM amd64/node:alpine as builder
+FROM --platform=$BUILDPLATFORM amd64/node:alpine AS builder
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .

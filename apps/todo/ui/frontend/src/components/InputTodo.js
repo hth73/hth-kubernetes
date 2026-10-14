@@ -1,39 +1,46 @@
-import React, {Component} from "react"
+import React, {Component} from "react";
 
 class InputTodo extends Component {
     state = {
         title: "",
+        isSubmitting: false,
     };
 
-    onChange = e => {
-        // console.log("hello");
-
-        this.setState({
-            // title: e.target.value
-            [e.target.name]: e.target.value
-        });
+    onChange = event => {
+        this.setState({title: event.target.value});
     };
 
-    handleSubmit = e => {
-        e.preventDefault(); //  preventing the default behaviour of the form submission.
-        console.log(this.state.title);
-        this.props.addTodoProps(this.state.title, this.state.description);
-        this.setState({
-            title: "",
-        });
+    handleSubmit = async event => {
+        event.preventDefault();
+        const title = this.state.title.trim();
+        if (!title || this.state.isSubmitting) {
+            return;
+        }
+
+        this.setState({isSubmitting: true});
+        const saved = await this.props.addTodoProps(title);
+        this.setState(previousState => ({
+            title: saved ? "" : previousState.title,
+            isSubmitting: false,
+        }));
     };
 
     render() {
         return (
             <form className="todo-form" onSubmit={this.handleSubmit}>
+                <label className="sr-only" htmlFor="new-task">New task</label>
                 <input
+                    id="new-task"
                     type="text"
-                    placeholder="Add a new task..."
+                    placeholder="Add a task"
                     value={this.state.title}
-                    name="title"
                     onChange={this.onChange}
+                    maxLength={255}
+                    required
                 />
-                <button type="submit">+ Add Todo</button>
+                <button type="submit" disabled={!this.state.title.trim() || this.state.isSubmitting}>
+                    {this.state.isSubmitting ? "Adding…" : "Add task"}
+                </button>
             </form>
         )
     }
