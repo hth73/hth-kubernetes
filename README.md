@@ -14,6 +14,7 @@
 * [Node Log Collector - DaemonSet](apps/node-log-collector/README.md)
 * [Headlamp Kubernetes UI](infrastructure/dashboard/README.md)
 * [Argo CD – GitOps im Kubernetes](infrastructure/argocd/README.md)
+* [Kustomize – Kubernetes-Manifeste verwalten](infrastructure/kustomize/README.md)
 * [Popeye Kubernetes Live Cluster Linter](infrastructure/popeye/README.md)
 * [TrueNAS ISCSI LUNs](infrastructure/iscsi-storage/README.md)
   * [Forgejo Git Server](apps/forgejo/srv/README.md)
