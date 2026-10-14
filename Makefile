@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 export KUBECONFIG := $(HOME)/.kube/master1
 
-.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo
+.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo deploy-argocd
 
 help:
 	@echo "Available targets:"
@@ -13,8 +13,9 @@ help:
 	@echo "  make deploy-petclinic"
 	@echo "  make deploy-yelb"
 	@echo "  make deploy-forgejo"
+	@echo "  make deploy-argocd"
 
-all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo
+all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo deploy-argocd
 
 bootstrap:
 	./scripts/bootstrap.sh
@@ -35,3 +36,12 @@ deploy-forgejo:
 	kubectl apply -k ./apps/forgejo/db
 	helm upgrade --install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f ./apps/forgejo/srv/values.yaml
 	kubectl apply -f ./apps/forgejo/srv/server-certificate.yaml
+
+deploy-argocd:
+	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+	kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.5/manifests/install.yaml
+	kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
+	kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
+	kubectl rollout restart deployment/argocd-server -n argocd
+	kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
+	kubectl apply -k infrastructure/argocd
