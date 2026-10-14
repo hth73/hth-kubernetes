@@ -1,8 +1,8 @@
 #!/bin/bash
+set -eu
 
 # Recreate config file
-rm -rf ./env-config.js
-touch ./env-config.js
+: > ./env-config.js
 
 # Add assignment
 echo "window._env_ = {" >> ./env-config.js

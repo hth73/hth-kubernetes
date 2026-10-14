@@ -1,0 +1,16 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: app-pdb
+  namespace: app-pdb
+  labels:
+    app.kubernetes.io/name: app-pdb
+    app.kubernetes.io/component: app-pdb
+    app: app-pdb
+
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-pdb
+      app.kubernetes.io/component: app-pdb

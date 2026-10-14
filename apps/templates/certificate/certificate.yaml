@@ -1,30 +1,27 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: todo-ui
-  namespace: todo
+  name: servername.htdom.lan
+  namespace: app-cert
   labels:
-    app.kubernetes.io/name: todo-ui
-    app.kubernetes.io/component: ui
-    app: todo
-    environment: dev
+    app.kubernetes.io/name: app-cert
+    app.kubernetes.io/component: app-cert
+    app: app-cert
 
 spec:
   dnsNames:
-    - todo.htdom.lan
-  commonName: todo.htdom.lan
-  secretName: todo-pki-secret # server secret
-  duration: 2160h                  # 90 days
-  renewBefore: 360h                # renewal 15 days before expires
+    - servername.htdom.lan
+  commonName: servername.htdom.lan
+  secretName: servername-pki-secret # server secret
+  duration: 2160h                   # 90 days
+  renewBefore: 360h                 # renewal 15 days before expires
   usages:
     - server auth
-
   privateKey:
     algorithm: ECDSA # or RSA oder ECDSA
     size: 256        # 2048 for RSA/256 for ECDSA
     encoding: PKCS8 
     rotationPolicy: Always
-
   subject:
     organizations:
       - "HTDOM Inc." # (O) Organization
@@ -34,7 +31,6 @@ spec:
       - "DE"         # (C) Country
     localities:
       - "Munich"     # (L) Location
-
   issuerRef:
     name: htdom-sub-ca
     kind: ClusterIssuer

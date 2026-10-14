@@ -8,10 +8,14 @@ metadata:
     app.kubernetes.io/component: ui
     app: todo
     environment: dev
-    gitops-test: "true"
 
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: todo-ui
@@ -26,12 +30,23 @@ spec:
 
     spec:
       serviceAccountName: todo-ui
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
 
       nodeSelector:
         node-role.kubernetes.io/worker: "true"
         
       containers:
         - name: todo-ui-container
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           image: docker.io/hellemon/docker-repo:todo-frontend-0.1.3
           imagePullPolicy: IfNotPresent
           env:
@@ -39,7 +54,7 @@ spec:
               value: "/api/items/"
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           resources:
             requests:
@@ -48,3 +63,15 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5

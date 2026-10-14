@@ -6,3 +6,4 @@ resources:
   - server-certificate.yaml
   - todo-application.yaml
   - yelb-application.yaml
+  - argocd-patch.yaml
