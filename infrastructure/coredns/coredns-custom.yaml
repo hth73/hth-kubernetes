@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  custom.override: |
+    # Erweiterung des bestehenden CoreDNS-Serverblocks.
+    # Eigene CoreDNS-Konfiguration hier ergänzen.
+  custom.server: |
+    # Platzhalter für eigene DNS-Zonen.

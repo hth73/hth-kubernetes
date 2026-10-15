@@ -33,6 +33,12 @@ kubectl get nodes -o name \
     done
 
 # --------------------------------------------------
+# ConfigMap coredns to reduce log entries
+# --------------------------------------------------
+info "ConfigMap coredns"
+kubectl apply -f infrastructure/coredns/coredns-custom.yaml
+
+# --------------------------------------------------
 # Node Log Collector
 # --------------------------------------------------
 # info "Node Log Collector"
@@ -92,12 +98,6 @@ info "Installing forgejo secrets"
 kubectl apply -f apps/forgejo/namespace.yaml
 sops -d secrets/forgejo-db-secret.yaml | kubectl apply -f -
 sops -d secrets/forgejo-admin-secret.yaml | kubectl apply -f -
-
-# --------------------------------------------------
-# Headlamp Kubernetes UI
-# --------------------------------------------------
-info "Headlamp Kubernetes UI"
-kubectl apply -k infrastructure/dashboard
 
 # --------------------------------------------------
 # Finished
