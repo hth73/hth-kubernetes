@@ -1,0 +1,30 @@
+deployment:
+  replicas: 2
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+
+ports:
+  web:
+    port: 8000
+    hostPort: 80
+    nodePort: 30080
+  websecure:
+    port: 8443
+    hostPort: 443
+    nodePort: 30443
+
+service:
+  spec:
+    type: NodePort
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: traefik
+        topologyKey: kubernetes.io/hostname

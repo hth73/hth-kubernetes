@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/kubecfg.sh"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+
+source "$SCRIPT_DIR/kubecfg.sh"
 kubecfg
 
 ROOT_CA_SECRET="htdom-root-ca-secret"
@@ -9,6 +12,9 @@ SUB_CA_SECRET="htdom-sub-ca-secret"
 NAMESPACE="cert-manager"
 SYSTEM_CA_DIR="/usr/share/ca-certificates"
 LOCAL_CA_DIR="/usr/local/share/ca-certificates"
+
+ROOT_CA_FILE="$REPO_ROOT/htdom-root-ca.crt"
+SUB_CA_FILE="$REPO_ROOT/htdom-sub-ca.crt"
 
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
@@ -33,6 +39,10 @@ export_cert "$ROOT_CA_SECRET" "$tmp_dir/htdom-root-ca.crt"
 echo "[INFO] Exporting Sub-CA"
 export_cert "$SUB_CA_SECRET" "$tmp_dir/htdom-sub-ca.crt"
 
+echo "[INFO] Copying CA certificates to repository root"
+install -m 0644 "$tmp_dir/htdom-root-ca.crt" "$ROOT_CA_FILE"
+install -m 0644 "$tmp_dir/htdom-sub-ca.crt" "$SUB_CA_FILE"
+
 echo "[INFO] Installing CA certificates into both Ubuntu trust-store locations"
 for target_dir in "$SYSTEM_CA_DIR" "$LOCAL_CA_DIR"; do
   sudo install -D -m 0644 "$tmp_dir/htdom-root-ca.crt" \
@@ -44,5 +54,7 @@ done
 echo "[INFO] Updating CA certificate store"
 sudo update-ca-certificates
 
+echo "[INFO] CA certificates exported to:"
+echo "  $ROOT_CA_FILE"
+echo "  $SUB_CA_FILE"
 echo "[INFO] CA certificate installation completed"
-
