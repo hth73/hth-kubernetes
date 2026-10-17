@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 export KUBECONFIG := $(HOME)/.kube/master1
 
-.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo deploy-headlamp deploy-argocd
+.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-yelb deploy-todo deploy-headlamp deploy-argocd
 
 help:
 	@echo "Available targets:"
@@ -10,13 +10,12 @@ help:
 	@echo "  make bootstrap"
 	@echo "  make export-ca-certs"
 	@echo "  make deploy-podinfo"
-	@echo "  make deploy-petclinic"
 	@echo "  make deploy-yelb"
-	@echo "  make deploy-forgejo"
+	@echo "  make deploy-todo"
 	@echo "  make deploy-headlamp"
 	@echo "  make deploy-argocd"
 
-all: bootstrap export-ca-certs deploy-podinfo deploy-petclinic deploy-yelb deploy-forgejo deploy-headlamp deploy-argocd
+all: bootstrap export-ca-certs deploy-podinfo deploy-yelb deploy-todo deploy-headlamp deploy-argocd
 
 bootstrap:
 	./scripts/bootstrap.sh
@@ -27,16 +26,11 @@ export-ca-certs:
 deploy-podinfo:
 	kubectl apply -k ./apps/podinfo
 
-deploy-petclinic:
-	kubectl apply -k ./apps/petclinic
-
 deploy-yelb:
 	kubectl apply -k ./apps/yelb
 
-deploy-forgejo:
-	kubectl apply -k ./apps/forgejo/db
-	helm upgrade --install forgejo oci://code.forgejo.org/forgejo-helm/forgejo -n forgejo -f ./apps/forgejo/srv/values.yaml
-	kubectl apply -f ./apps/forgejo/srv/server-certificate.yaml
+deploy-todo:
+	kubectl kustomize --load-restrictor LoadRestrictionsNone ./apps/todo | kubectl apply -f -
 
 deploy-headlamp:
 	kubectl apply -k ./infrastructure/dashboard
