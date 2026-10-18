@@ -1,169 +1,60 @@
 # Kubernetes Homelab
 
 <p>
-  <img src="images/k8s_setup.jpg" width="50%" height="50%" />
+  <img src="images/k8s_homelab.jpg" width="50%" height="50%" />
 </p>
 
-<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Headlamp-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/CloudNativePG-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
+<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Ansible-EE0000?style=flat&logo=ansible&labelColor=ffffff&logoColor=EE0000" /> <img src="https://img.shields.io/badge/Packer-02A8EF?style=flat&logo=packer&labelColor=ffffff&logoColor=02A8EF" /> <img src="https://img.shields.io/badge/Vagrant-1868F2?style=flat&logo=vagrant&labelColor=ffffff&logoColor=1868F2" />
 ---
 
 ### Inhaltsverzeichnis
 
-* [Cert Manager](infrastructure/cert-manager/README.md)
-* [etcd - key-value store](infrastructure/etcd/README.md)
-* [Node Log Collector - DaemonSet](apps/node-log-collector/README.md)
-* [Headlamp Kubernetes UI](infrastructure/dashboard/README.md)
-* [Argo CD – GitOps im Kubernetes](infrastructure/argocd/README.md)
-* [Kustomize – Kubernetes-Manifeste verwalten](infrastructure/kustomize/README.md)
-* [Popeye Kubernetes Live Cluster Linter](infrastructure/popeye/README.md)
-* [TrueNAS ISCSI LUNs](infrastructure/iscsi-storage/README.md)
-  * [Forgejo Git Server](apps/forgejo/srv/README.md)
-  * [Petclinic Demo Application](apps/petclinic/README.md)
-  * [Podinfo Demo Application](apps/podinfo/README.md)
-  * [yelb Demo Application](apps/yelb/README.md)
-  * [Todo List Demo Application](apps/todo/README.md)
+* [Kubernetes Clusters with K3s](README_k3s.md)
+* [Kubernetes Clusters from Scratch](README_scratch.md)
 
 ---
 
 ## Beschreibung
 
-Dieses Repository dokumentiert den Aufbau einer Kubernetes Testumgebung zu Lern- und Evaluierungszwecken.
+Dieses Repository dokumentiert den Aufbau und Betrieb eines Kubernetes Homelabs zu Lern- und Evaluierungszwecken.
 
-Der Fokus hier liegt auf:
-- Fedora CoreOS
-- Kubernetes (k3s)
-- Infrastructure Automation
-- Cert-manager & TLS
-- Traefik Ingress
-- Multi Node Networking
-- Storage Bereitstellung
-- GitOps Grundlagen
+Der Schwerpunkt liegt auf dem praktischen Aufbau von Kubernetes-Clustern, der Automatisierung der Infrastruktur und der schrittweisen Integration zentraler Plattformkomponenten.
 
-Die Umgebung wurde vollständig automatisiert und basiert auf:<br>
-Packer, Vagrant und Ansible
+### Projektinhalte
 
-* [CoreOS Test Environment](https://github.com/hth73/hth-coreos)
-* [CoreOS Linux Unattended Installation with Packer, Vagrant and Ansible](https://github.com/hth73/hth-ansible-wks)
+- Fedora CoreOS als Betriebssystem
+- Kubernetes mit K3s oder kubeadm
+- Automatisierte Infrastruktur Bereitstellung mit Packer, Vagrant und Ansible
+- Container Runtime und Container Networking
+- Ingress, TLS und Zertifikatsverwaltung mit Traefik und Cert-Manager
+- Multi-Node Netzwerk und Network Policies
+- Persistenter Storage mit TrueNAS ISCSI
+- GitOps und Anwendungsbereitstellung mit Argo CD
+- Kubernetes Dashboard mit Headlamp
 
-Der Kubernetes-Cluster besteht aus:
-- 3 Control Plane Master Nodes mit embedded etcd
-- 2 Worker Nodes
+### Cluster-Varianten
 
-Ziel des Projekts ist es, praktische Erfahrungen mit Kubernetes, CoreOS, Container Orchestrierung sowie automatisierter Infrastruktur Provisionierung zu sammeln und typische Plattform Komponenten schrittweise selbst aufzubauen.
+Das Repository enthält zwei Ansätze zum Aufbau eines Kubernetes-Clusters:
 
-Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kubernetes Client Konfigurationsdatei, diese wird dann im lokalen Verzeichnis unter `$HOME/.kube/config` abgelegt. 
+**`K3s`**
 
-```bash
-# Kubernetes Client Konfigurationsdatei (API Zugriff) - Master Node
-ssh core@192.168.56.10 'sudo cat /etc/rancher/k3s/k3s.yaml' | \
-sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' > "$HOME/.kube/config"
+Ein kompakter Kubernetes Cluster mit K3s. Diese Variante eignet sich für einen schnellen, ressourcenschonenden Aufbau und den Betrieb einer Kubernetes Lernumgebung.
 
-cat "$HOME/.kube/config
-```
+**`From Scratch mit kubeadm`**
 
-Danach kann man mit dem Tool `kubectl` oder `k9s` auf das Kubernetes Cluster zugreifen und die ersten Tests durchführen.
+Ein Kubernetes Cluster, dessen zentrale Komponenten und Abhängigkeiten schrittweise eingerichtet und konfiguriert werden. Dazu gehören unter anderem die Control-Plane-Komponenten, die Container Runtime, das Container Network Interface (CNI) und die Integration weiterer Plattformdienste.
 
-```bash
-kubectl get nodes        
-# NAME             STATUS   ROLES                AGE     VERSION
-# coreos-master1   Ready    control-plane,etcd   2d15h   v1.36.5+k3s1
-# coreos-master2   Ready    control-plane,etcd   2d15h   v1.36.5+k3s1
-# coreos-master3   Ready    control-plane,etcd   2d15h   v1.36.5+k3s1
-# coreos-worker1   Ready    worker               2d15h   v1.36.5+k3s1
-# coreos-worker2   Ready    worker               2d15h   v1.36.5+k3s1
+Die konkreten Installationsschritte, Konfigurationen und Testergebnisse sind jeweils in den verlinkten Dokumentationen beschrieben.
 
-kubectl get namespaces 
-# NAME              STATUS   AGE
-# default           Active   18h
-# kube-node-lease   Active   18h
-# kube-public       Active   18h
-# kube-system       Active   18h
+### Infrastruktur und Automatisierung
 
-kubectl get services
-# NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-# kubernetes   ClusterIP   10.43.0.1    <none>        443/TCP   18h
+Die virtuelle Infrastruktur basiert auf VirtualBox und Fedora CoreOS. Packer, Vagrant und Ansible werden zur Erstellung, Bereitstellung und Konfiguration der virtuellen Maschinen eingesetzt.
 
-# nginx demo pod anlegen und auf 3 pods erweitern
-kubectl create deployment nginx --image=nginx
-kubectl scale deployment nginx --replicas=3
+Die zugehörigen Projekte sind hier zu finden:
 
-kubectl get pods                                    
-# NAME                     READY   STATUS    RESTARTS      AGE
-# nginx-56c45fd5ff-7764h   1/1     Running   1 (80m ago)   19h
-# nginx-56c45fd5ff-mvfvx   1/1     Running   1 (80m ago)   19h
-# nginx-56c45fd5ff-v8npb   1/1     Running   1 (18h ago)   19h
+- [Packer, Vagrant and Ansible](https://github.com/hth73/hth-ansible-wks)
+- [Fedora CoreOS](https://github.com/hth73/hth-coreos)
 
-kubectl describe services nginx                 
-# Name:                     nginx
-# Namespace:                default
-# Labels:                   app=nginx
-# Annotations:              <none>
-# Selector:                 app=nginx
-# Type:                     NodePort
-# IP Family Policy:         SingleStack
-# ...
+### Ziel des Projekts
 
-kubectl expose deployment nginx --port=80 --type=NodePort
-
-kubectl get services                                          
-# NAME         TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
-# kubernetes   ClusterIP   10.43.0.1     <none>        443/TCP        19h
-# nginx        NodePort    10.43.39.44   <none>        80:30413/TCP   15s
-
-curl http://192.168.56.11:30413
-# <!DOCTYPE html>
-# <html>
-# <head>
-# <title>Welcome to nginx!</title>
-# ...
-
-kubectl exec -it deploy/nginx -- sh
-
-hostname
-# nginx-56c45fd5ff-v8npb
-
-ls -la
-# total 4
-# ...
-# lrwxrwxrwx.   1 root root    7 May  8 16:10 bin -> usr/bin
-# ...
-
-## nginx Deployment und Service wieder löschen
-kubectl get deployment
-kubectl delete deployment nginx
-kubectl get deployment
-
-kubectl get services
-kubectl delete services nginx
-kubectl get services
-```
-
-Um die restlichen Anwendungen zu deployen wurde ein `Makefile` erstellt, dies erleichtert die Installation der einzelnen Komponenten.
-
-```bash
-make Makefile help
-# Available targets:
-#   make all
-#   make bootstrap
-#   make export-ca-certs
-#   make deploy-podinfo
-#   make deploy-postgresql
-#  make deploy-forgejo
-
-make Makefile all
-
-kubectl get pods -A                               
-# NAMESPACE      NAME                                       READY   STATUS      RESTARTS        AGE
-# cert-manager   cert-manager-76ffbfcbfc-c7fjt              1/1     Running     1 (6h41m ago)   19h
-# cert-manager   cert-manager-cainjector-6468bc96c7-wh4mc   1/1     Running     1 (6h40m ago)   19h
-# cert-manager   cert-manager-webhook-558c6d4f4d-4t24r      1/1     Running     1 (6h41m ago)   19h
-# cnpg-system    cnpg-cloudnative-pg-968f678b8-mg96z        1/1     Running     1 (18h ago)     19h
-# forgejo        forgejo-59c66ffffd-mk7ql                   1/1     Running     1 (6h41m ago)   19h
-# kube-system    coredns-7cfb7bc9c7-jlf44                   1/1     Running     2 (6h42m ago)   20h
-# ...
-# kube-system    svclb-traefik-9e86a69a-zn6v4               2/2     Running     4 (6h42m ago)   20h
-# kube-system    traefik-7c8544f77-4x96m                    1/1     Running     2 (6h42m ago)   20h
-# podinfo        podinfo-54995fdf8f-64dww                   1/1     Running     1 (6h40m ago)   19h
-# podinfo        podinfo-54995fdf8f-fsvl4                   1/1     Running     1 (6h41m ago)   19h
-# postgresql     forgejo-postgres-1                         1/1     Running     1 (6h41m ago)   19h
-```
+Ziel ist es, praktische Erfahrungen mit Linux, Kubernetes, Container Orchestrierung, Netzwerktechnik, Storage und Infrastructure Automation zu sammeln. Die beiden Cluster Varianten ermöglichen es, sowohl den vereinfachten Einstieg mit `K3s` als auch den schrittweisen Aufbau mit `kubeadm` nachzuvollziehen.
