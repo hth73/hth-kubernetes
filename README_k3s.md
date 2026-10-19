@@ -29,11 +29,130 @@
 
 Der Kubernetes-Cluster besteht aus:
 - 1-3 Control Plane Master Nodes mit embedded etcd
-- 2 Worker Nodes
+- 2-3 Worker Nodes
+
+## Aufbau des K3s Kubernetes Cluster
+
+Um ein K3s Kubernetes Cluster aufbauen zu können, benötigt es zwei Repositories und eine funktionierende VirtualBox Umgebung.
+
+* [CoreOS Linux Unattended Installation](https://github.com/hth73/hth-ansible-wks)
+* [Kubernetes Homelab](https://github.com/hth73/hth-kubernetes)
+
+### Vorbereitung für das CoreOS Image
+
+```bash
+# --------------------------------------------------
+# Repositories clonen
+# --------------------------------------------------
+mkdir -p ~/repos && cd ~/repos
+git clone https://github.com/hth73/hth-ansible-wks.git
+git clone https://github.com/hth73/hth-kubernetes.git
+
+# --------------------------------------------------
+# SSH Key ohne Passphrase für das Deployment erstellen
+# --------------------------------------------------
+cd hth-ansible-wks
+ssh-keygen -o -t ed25519 -f secrets/ssh/id_ed25519 -C'ansible@accesskey'
+
+# --------------------------------------------------
+# CoreOS ISO Image downloaden, und den "iso_path" in packer/coreos/coreos.pkr.hcl anpassen
+# --------------------------------------------------
+mkdir iso
+wget -O iso/fedora-coreos-44.20260928.3.1-live-iso.x86_64.iso https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/44.20260928.3.1/x86_64/fedora-coreos-44.20260928.3.1-live-iso.x86_64.iso
+```
+
+### CoreOS Ignition-Datei anpassen
+```bash
+# --------------------------------------------------
+# CoreOS Butane Binary lokal installieren
+# --------------------------------------------------
+sudo wget -O /usr/local/bin/butane https://github.com/coreos/butane/releases/download/v0.29.0/butane-x86_64-unknown-linux-gnu
+chmod +x ~/usr/local/bin/butane
+
+butane --version
+# Butane 0.29.0
+
+# --------------------------------------------------
+# Alle gewünschten SSH Puplic Keys in packer/coreos/config/ansible_config.bu kopieren.
+# --------------------------------------------------
+cat secrets/ssh/id_ed25519.pub 
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN2X1sQYiP/jSE8CWG+FXKjDYJcfic4mALW71fVB7SfC
+
+# --- packer/coreos/config/ansible_config.bu
+# Fedora CoreOS Ansible Butane configuration
+# Date: 2026-05-20
+
+variant: fcos
+version: 1.6.0
+
+passwd:
+ users:
+   # Default User core
+   - name: core
+     ssh_authorized_keys:
+       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN2X1sQYiP/jSE8CWG+FXKjDYJcfic4mALW71fVB7SfC
+       - ssh-ed25519 AAAA.....lT
+
+# --------------------------------------------------
+# packer/coreos/config/ansible_config.bu in Ignition-Datei konvertieren
+# -------------------------------------------------- 
+butane --pretty --strict packer/coreos/config/ansible_config.bu > packer/coreos/config/ansible_config.ign
+
+# --------------------------------------------------
+# Create an ignition checksum and use it in Packer
+# --------------------------------------------------
+sha256sum packer/coreos/config/ansible_config.ign
+# 3834f44c52b0b80e..........
+# or
+sha512sum packer/coreos/config/ansible_config.ign
+# 9c4f683ab01ca78f..........
+
+# --------------------------------------------------
+# Checksum in packer/coreos/coreos.pkr.hcl anpassen
+# --------------------------------------------------
+...
+
+variable "ignition_hash" {
+  type    = string
+  default = "sha256-3834f44c52b0b80e.........."
+  # default = "sha512-9c4f683ab01ca78f.........."
+}
+```
+
+### CoreOS Basis Image bauen mit packer
+```bash
+cd hth-ansible-wks/packer/coreos
+
+packer init coreos.pkr.hcl
+packer validate coreos.pkr.hcl
+packer build coreos.pkr.hcl
+```
+
+### CoreOS VMs deployen
+```bash
+cd ../../vagrant/coreos
+
+# --------------------------------------------------
+# Vagrantfile_k3s_cluster bei Bedarf anpassen
+# --------------------------------------------------
+vagrant box add ../../packer/coreos/coreos-base.box --name coreos-base --force
+export VAGRANT_VAGRANTFILE=~/repos/hth-ansible-wks/vagrant/coreos/Vagrantfile_k3s_cluster
+
+vagrant validate
+# Vagrantfile validated successfully.
+
+vagrant up
+```
 
 Um Zugriff auf das Kubernetes Cluster zu bekommen, benötigt man vorher die Kubernetes Client Konfigurationsdatei, diese wird dann im lokalen Verzeichnis unter `$HOME/.kube/config` abgelegt. 
 
 ```bash
+# --------------------------------------------------
+# SSH Key laden
+# --------------------------------------------------
+eval "$(ssh-agent -s)"
+ssh-add ~/repos/hth-ansible-wks/secrets/ssh/id_ed25519
+
 mkdir -p "$HOME/.kube"
 umask 077
 
