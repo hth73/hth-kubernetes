@@ -1,20 +1,25 @@
-SHELL=/bin/bash
+SHELL := /bin/bash
 
-export KUBECONFIG := $(HOME)/.kube/master1
+# Keep Makefile targets and scripts on the same kubeconfig.
+export KUBECONFIG := $(HOME)/.kube/config
+
+.NOTPARALLEL: all
 
 .PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-yelb deploy-todo deploy-headlamp deploy-argocd
 
 help:
 	@echo "Available targets:"
-	@echo "  make all"
-	@echo "  make bootstrap"
-	@echo "  make export-ca-certs"
-	@echo "  make deploy-podinfo"
-	@echo "  make deploy-yelb"
-	@echo "  make deploy-todo"
-	@echo "  make deploy-headlamp"
-	@echo "  make deploy-argocd"
+	@echo "  make all              Bootstrap infrastructure and deploy the retained apps"
+	@echo "  make bootstrap        Install/configure Cilium, CoreDNS config, cert-manager,"
+	@echo "                        Metrics Server, Traefik, and Todo/Yelb DB Secrets"
+	@echo "  make export-ca-certs  Export Root/Sub-CA certificates to the workstation trust store"
+	@echo "  make deploy-podinfo   Deploy Podinfo"
+	@echo "  make deploy-yelb      Deploy Yelb"
+	@echo "  make deploy-todo      Deploy Todo"
+	@echo "  make deploy-headlamp  Deploy Headlamp dashboard"
+	@echo "  make deploy-argocd    Install/configure Argo CD"
 
+# These prerequisites are intentionally ordered for a normal `make all` run.
 all: bootstrap export-ca-certs deploy-podinfo deploy-yelb deploy-todo deploy-headlamp deploy-argocd
 
 bootstrap:

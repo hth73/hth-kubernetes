@@ -6,26 +6,28 @@ kubecfg() {
   mkdir -p "$HOME/.kube"
   umask 077
 
-  if [[ ! -s "$kubeconfig" ]]; then
-    echo "[INFO] Fetching kubeconfig from master1..."
+    if ssh core@192.168.56.10 \
+      "sudo test -f /etc/kubernetes/admin.conf"; then
+      echo "[INFO] Detected kubeadm installation."
 
-    local tmp_file
-    tmp_file="$(mktemp "$HOME/.kube/master1.XXXXXX")"
-    trap 'rm -f "$tmp_file"' RETURN
-
-    ssh core@192.168.56.10 \
-      'ssh core@192.168.56.10 'sudo cat /etc/kubernetes/admin.conf' | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#'' \
+      ssh core@192.168.56.10 \
+        "sudo cat /etc/kubernetes/admin.conf" \
+        | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' \
         > "$tmp_file"
 
-    [[ -s "$tmp_file" ]] || {
-      echo "[ERROR] Kubeconfig is empty." >&2
-      return 1
-    }
+    elif ssh core@192.168.56.10 \
+      "sudo test -f /etc/rancher/k3s/k3s.yaml"; then
+      echo "[INFO] Detected K3s installation."
 
-    chmod 600 "$tmp_file"
-    mv "$tmp_file" "$kubeconfig"
-    trap - RETURN
-  fi
+      ssh core@192.168.56.10 \
+        "sudo cat /etc/rancher/k3s/k3s.yaml" \
+        | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' \
+        > "$tmp_file"
+
+    else
+      echo "[ERROR] No kubeadm or K3s kubeconfig found." >&2
+      return 1
+    fi
 
   export KUBECONFIG="$kubeconfig"
 }

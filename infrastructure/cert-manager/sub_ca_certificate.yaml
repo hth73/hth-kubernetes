@@ -1,12 +1,14 @@
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
-
 metadata:
   name: htdom-sub-ca
   namespace: cert-manager
 
 spec:
+  secretTemplate:
+    annotations:
+      cert-manager.io/allow-direct-injection: "true"
   commonName: "htdom-sub-ca"
   secretName: "htdom-sub-ca-secret" # sub-ca secret
   isCA: true

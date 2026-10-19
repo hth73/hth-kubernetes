@@ -1,105 +1,150 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/kubecfg.sh"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
+source "$SCRIPT_DIR/kubecfg.sh"
 kubecfg
 
 # --------------------------------------------------
-# Variables
+# Versions / configuration
 # --------------------------------------------------
-CERT_MANAGER_VERSION="v1.21.2"
+CILIUM_VERSION="${CILIUM_VERSION:-1.20.3}"
+CERT_MANAGER_VERSION="${CERT_MANAGER_VERSION:-v1.21.2}"
+METRICS_SERVER_VERSION="v0.9.0"
 
 # --------------------------------------------------
-# Helper
+# Helpers
 # --------------------------------------------------
 info() {
-  echo
-  echo "[INFO] $1"
+  printf '\n[INFO] %s\n' "$1"
 }
 
+require_command() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    printf '[ERROR] Required command not found: %s\n' "$1" >&2
+    exit 1
+  fi
+}
+
+for cmd in kubectl helm sops; do
+  require_command "$cmd"
+done
+
 # --------------------------------------------------
-# Kubeconfig
+# Kubernetes connection / node labels
 # --------------------------------------------------
 info "Checking Kubernetes connection"
 kubectl get nodes
 
-# --------------------------------------------------
-# Worker node labeling
-# --------------------------------------------------
-kubectl get nodes -o name \
-  | grep '^node/coreos-worker' \
-  | while read -r node; do
-      kubectl label "$node" node-role.kubernetes.io/worker=true --overwrite
-    done
-
-# --------------------------------------------------
-# ConfigMap coredns to reduce log entries
-# --------------------------------------------------
-info "ConfigMap coredns"
-kubectl apply -f infrastructure/coredns/coredns-custom.yaml
-
-# --------------------------------------------------
-# Node Log Collector
-# --------------------------------------------------
-# info "Node Log Collector"
-# kubectl apply -f apps/node-log-collector/daemonset.yaml
+info "Ensuring worker-node labels"
+for node in coreos-worker1 coreos-worker2 coreos-worker3; do
+  if kubectl get node "$node" >/dev/null 2>&1; then
+    kubectl label node "$node" node-role.kubernetes.io/worker=true --overwrite
+  else
+    printf '[WARN] Node %s not found; skipping worker label.\n' "$node" >&2
+  fi
+done
 
 # --------------------------------------------------
 # Helm repositories
 # --------------------------------------------------
-info "Adding Helm repositories"
+info "Adding / updating Helm repositories"
+helm repo add cilium https://helm.cilium.io/ --force-update
 helm repo add jetstack https://charts.jetstack.io --force-update
-helm repo add cnpg https://cloudnative-pg.github.io/charts --force-update
+helm repo add traefik https://traefik.github.io/charts --force-update
 helm repo update
 
 # --------------------------------------------------
-# Cert-Manager
+# Cilium
 # --------------------------------------------------
-info "Installing cert-manager"
+info "Installing/upgrading Cilium ${CILIUM_VERSION}"
+helm upgrade --install cilium cilium/cilium \
+  --namespace kube-system \
+  --version "$CILIUM_VERSION" \
+  --values infrastructure/cilium/values.yaml
+
+kubectl rollout status daemonset/cilium -n kube-system --timeout=300s
+kubectl rollout status deployment/cilium-operator -n kube-system --timeout=300s
+
+# --------------------------------------------------
+# CoreDNS
+# --------------------------------------------------
+info "Applying CoreDNS custom configuration"
+kubectl apply -f infrastructure/coredns/coredns-custom.yaml
+
+# --------------------------------------------------
+# cert-manager
+# --------------------------------------------------
+info "Installing/upgrading cert-manager ${CERT_MANAGER_VERSION}"
 helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --version "${CERT_MANAGER_VERSION}" \
+  --version "$CERT_MANAGER_VERSION" \
   --set crds.enabled=true \
   --set crds.keep=true \
   --set startupapicheck.enabled=false
 
-# --------------------------------------------------
-# CloudNativePG - PostgreSQL Operator for Kubernetes
-# --------------------------------------------------
-info "Installing CloudNativePG"
-helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
-
-# --------------------------------------------------
-# Wait for deployments
-# --------------------------------------------------
-info "Waiting for cert-manager"
+info "Waiting for cert-manager deployments"
 kubectl rollout status deployment/cert-manager -n cert-manager --timeout=300s
 kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=300s
 kubectl rollout status deployment/cert-manager-cainjector -n cert-manager --timeout=300s
 
-# --------------------------------------------------
-# Create Root and Sub-CA
-# --------------------------------------------------
-info "Installing Root and Sub-CA"
+info "Applying Root CA and Sub-CA resources"
 kubectl apply -k infrastructure/cert-manager
 
-# --------------------------------------------------
-# Yelb secrets deployment
-# --------------------------------------------------
-info "Installing yelb secrets"
-kubectl apply -f apps/yelb/namespace.yaml
-sops -d secrets/yelb-db-secret.yaml | kubectl apply -f -
+info "Waiting for Root CA and Sub-CA certificates"
+kubectl wait --for=condition=Ready certificate/htdom-root-ca -n cert-manager --timeout=300s
+kubectl wait --for=condition=Ready certificate/htdom-sub-ca -n cert-manager --timeout=300s
 
 # --------------------------------------------------
-# forgejo secrets deployment
+# Metrics Server
 # --------------------------------------------------
-info "Installing forgejo secrets"
-kubectl apply -f apps/forgejo/namespace.yaml
-sops -d secrets/forgejo-db-secret.yaml | kubectl apply -f -
-sops -d secrets/forgejo-admin-secret.yaml | kubectl apply -f -
+# Kustomize uses components-with-tls.yaml, which includes the cert-manager
+# Certificate and APIService CA injection. --kubelet-insecure-tls remains
+# enabled because this lab's kubelet serving certificates currently lack
+# matching IP SANs.
+info "Installing/updating Metrics Server ${METRICS_SERVER_VERSION}"
+kubectl apply -k infrastructure/metrics-server
+kubectl rollout status deployment/metrics-server -n kube-system --timeout=300s
+kubectl wait --for=condition=Available apiservice/v1beta1.metrics.k8s.io --timeout=300s
+
+# --------------------------------------------------
+# Traefik
+# --------------------------------------------------
+info "Installing/upgrading Traefik"
+traefik_args=(
+  upgrade --install traefik traefik/traefik
+  --namespace traefik
+  --create-namespace
+  --values infrastructure/traefik/values.yaml
+)
+if [[ -n "$TRAEFIK_CHART_VERSION" ]]; then
+  traefik_args+=(--version "$TRAEFIK_CHART_VERSION")
+fi
+helm "${traefik_args[@]}"
+kubectl rollout status deployment/traefik -n traefik --timeout=300s
+
+# --------------------------------------------------
+# Todo / Yelb namespaces and encrypted database secrets
+# --------------------------------------------------
+info "Ensuring Todo and Yelb namespaces exist"
+kubectl create namespace todo --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -f apps/yelb/namespace.yaml
+
+info "Applying encrypted Todo database Secret"
+sops -d secrets/todo-db-secret.yaml | kubectl apply -f -
+
+info "Applying encrypted Yelb database Secret"
+sops -d secrets/yelb-db-secret.yaml | kubectl apply -f -
 
 # --------------------------------------------------
 # Finished
 # --------------------------------------------------
 info "Bootstrap completed successfully"
+printf '\nInstalled/configured by bootstrap:\n'
+printf '  - Cilium\n  - kubeadm-managed CoreDNS custom ConfigMap\n'
+printf '  - cert-manager and Root/Sub-CA\n  - Metrics Server\n  - Traefik\n'
+printf '  - Todo and Yelb namespaces + database Secrets\n'

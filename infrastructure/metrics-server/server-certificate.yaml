@@ -1,0 +1,40 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  labels:
+    k8s-app: metrics-server
+
+spec:
+  dnsNames:
+    - metrics-server.kube-system.svc
+    - metrics-server.kube-system.svc.cluster.local
+  commonName: metrics-server.kube-system.svc.cluster.local
+  secretName: metrics-server-pki-secret
+  duration: 2160h
+  renewBefore: 360h
+
+  usages:
+    - server auth
+
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    encoding: PKCS8 
+    rotationPolicy: Always
+
+  subject:
+    organizations:
+      - "HTDOM Inc."
+    organizationalUnits:
+      - "Kubernetes"
+    countries:
+      - "DE"
+    localities:
+      - "Munich"
+
+  issuerRef:
+    name: htdom-sub-ca
+    kind: ClusterIssuer
+    group: cert-manager.io
