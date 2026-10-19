@@ -1,4 +1,4 @@
-# Kubernetes Clusters with K3s (WIP)
+# Kubernetes Clusters with K3s
 
 <p>
   <img src="images/k8s_setup.jpg" width="50%" height="50%" />
