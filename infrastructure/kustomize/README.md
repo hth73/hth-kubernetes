@@ -1,6 +1,6 @@
 # Kustomize – Kubernetes-Manifeste verwalten
 
-[Back to home](../../README.md)
+[Back to home](../../README_k3s.md)
 
 ---
 

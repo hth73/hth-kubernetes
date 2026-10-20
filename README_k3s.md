@@ -4,7 +4,7 @@
   <img src="images/k8s_setup.jpg" width="50%" height="50%" />
 </p>
 
-<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Headlamp-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/Forgejo-FB923C?style=flat&logo=forgejo&labelColor=ffffff&logoColor=FB923C" /> <img src="https://img.shields.io/badge/CloudNativePG-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&labelColor=ffffff&logoColor=4169E1" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
+<img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Cilium-F8C517?style=flat&logo=cilium&labelColor=ffffff&logoColor=F8C517" /> <img src="https://img.shields.io/badge/Traefik-24A1C1?style=flat&logo=traefikproxy&labelColor=ffffff&logoColor=24A1C1" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Headlamp-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
 ---
 
 ### Inhaltsverzeichnis
@@ -32,6 +32,7 @@ Der Kubernetes-Cluster besteht aus:
 - 2-3 Worker Nodes
 - Cilium mit einem VXLAN-Overlay-Netzwerk
 - CoreDNS über Helm Charts
+- Cert-Manager für TLS/SSL-Zertifikate
 - Traefik über Helm Charts
 - Hubble UI Observability-Plattform
 - Headlamp Kubernetes Dashboard
@@ -153,6 +154,63 @@ vagrant validate
 vagrant up
 ```
 
+## SOPS: Secrets OPerationS integration
+
+```bash
+# --------------------------------------------------------------------------------
+# SOPS installation
+# https://getsops.io - https://github.com/getsops
+# --------------------------------------------------------------------------------
+cd /tmp
+wget https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
+mv sops-v3.13.3.linux.amd64 ~/bin/sops
+chmod +x ~/bin/sops
+
+sops --version --check-for-updates
+sops 3.13.3 (latest)
+
+# --------------------------------------------------------------------------------
+# Set up sops with age and age-keygen
+# https://github.com/FiloSottile/age
+# --------------------------------------------------------------------------------
+wget https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz
+tar xvf age-v1.3.2-linux-amd64.tar.gz
+mv age/age ~/bin
+mv age/age-keygen ~/bin
+
+age -version
+age-keygen -version
+
+# ---
+
+mkdir ~/.sops
+age-keygen -o ~/.sops/sops_key.txt
+
+cat ~/.sops/sops_key.txt
+# created: xxx
+# public key: age13..................................
+# AGE-SECRET-KEY-....................................
+
+vi ~/.zshrc
+export SOPS_AGE_KEY_FILE="${HOME}/.sops/sops_key.txt"
+```
+
+### SOPS für Kubernetes konfigurieren
+
+```bash
+## Create a folder and a sops rule file
+mkdir secrets
+
+## add the public age key from the file "cat ~/.sops/sops_key.txt"
+vi .sops.yaml
+# ---
+# creation_rules:
+#   - path_regex: secrets/.*\.ya?ml$
+#     encrypted_regex: '^(data|stringData|password|PASSWD|token|secret|ssh_keys)$'
+#     age: age13..................................
+
+# ---
+
 ### Abschließende Installationsschritte für das K3s-Cluster
 
 Für die Installation der restlichen Komponenten wurde ein `Makefile` erstellt.
@@ -170,24 +228,27 @@ Wenn die Root-/Sub-CA unter einem eigenen Namen installiert werden soll, müssen
 
 ```bash
 # --------------------------------------------------
-# /etc/hosts anpassen
+# /etc/hosts anpassen.
+# Der Traefik Einstiegspunkt ist immer coreos-worker1 oder coreos-worker2
 # --------------------------------------------------
 sudo vi /etc/hosts                              
 # ...
 
-192.168.56.10 argo.htdom.lan
-
+192.168.56.13 argo.htdom.lan
 192.168.56.13 dashboard.htdom.lan
-192.168.56.14 dashboard.htdom.lan
-
 192.168.56.13 hubble.htdom.lan
-192.168.56.14 hubble.htdom.lan
-
 192.168.56.13 podinfo.htdom.lan
+
+oder
+
+192.168.56.14 argo.htdom.lan
+192.168.56.14 dashboard.htdom.lan
+192.168.56.15 hubble.htdom.lan
 192.168.56.14 podinfo.htdom.lan
+
 ```
 
-Dieses `Makefile` verwendet Bash-Skripte, um die Kernkomponenten zu installieren und weitere Tooling-Aufgaben auszuführen.
+Das bereitgestellte `Makefile` verwendet ein Bash-Skript `./scripts/k3s/bootstrap.sh`, um die Kernkomponenten zu installieren und weitere Tooling-Aufgaben auszuführen.
 
 - Cilium mit einem VXLAN-Overlay-Netzwerk
 - Hubble UI Observability-Plattform
@@ -211,6 +272,29 @@ make help
 #   make deploy-argocd    Install Argo CD
 
 make k3s
+```
+
+### Token für Headlamp Dashboard erzeugen
+
+```bash
+kubectl create token dashboard -n dashboard               
+# eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg5Z
+```
+
+### Initial Passwort für ArgoCD ausgeben
+
+```bash
+# --------------------------------------------------
+# Initial Passwort ausgeben (Username: admin)
+# --------------------------------------------------
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 --decode
+# 3nSKlC8Kfxxxxxxxx
+
+# --------------------------------------------------
+# Nach Passwort Änderung in ArgoCD, das Initial Password in K3s löschen
+# --------------------------------------------------
+kubectl delete secret argocd-initial-admin-secret -n argocd
+kubectl get secret argocd-initial-admin-secret -n argocd
 ```
 
 Um auf das Kubernetes-Cluster zugreifen zu können, wird zunächst die Kubernetes-Client-Konfigurationsdatei benötigt. Sie wird lokal unter `$HOME/.kube/config` abgelegt. 

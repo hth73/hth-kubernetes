@@ -5,7 +5,7 @@
 
 ---
 
-[Back to home](../../README.md)
+[Back to home](../../README_k3s.md)
 
 ---
 

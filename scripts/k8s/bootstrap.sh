@@ -154,7 +154,4 @@ kubectl apply -k ./apps/yelb
 # Finished
 # --------------------------------------------------
 info "Bootstrap completed successfully"
-printf '\nInstalled/configured by bootstrap:\n'
-printf '  - Cilium\n  - kubeadm-managed CoreDNS custom ConfigMap\n'
-printf '  - cert-manager and Root/Sub-CA\n  - Metrics Server\n  - Traefik\n'
-printf '  - Todo and Yelb namespaces + database Secrets\n'
+printf '\nBootstrap completed successfully\n'

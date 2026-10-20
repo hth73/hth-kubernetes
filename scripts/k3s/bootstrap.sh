@@ -63,7 +63,7 @@ helm repo add coredns https://coredns.github.io/helm --force-update
 helm repo update
 
 # --------------------------------------------------
-# Cilium Network
+# Cilium Network und Hubble UI
 # VXLAN Overlay: For network isolation, mobility, and Layer 2 connectivity across Layer 3 networks.
 # Native Routing: For higher performance, lower latency, and less overhead when direct routing is possible.
 # --------------------------------------------------
@@ -79,6 +79,9 @@ helm upgrade --install cilium cilium/cilium \
 
 kubectl rollout status daemonset/cilium -n kube-system --timeout=300s
 kubectl rollout status deployment/cilium-operator -n kube-system --timeout=300s
+
+kubectl apply -f "infrastructure/cilium/hubble-ui-ingress.yaml"
+kubectl apply -f "infrastructure/cilium/server-certificate.yaml"
 
 # --------------------------------------------------
 # CoreDNS
@@ -137,7 +140,4 @@ kubectl rollout status deployment/traefik -n traefik --timeout=300s
 # Finished
 # --------------------------------------------------
 info "Bootstrap completed successfully"
-printf '\nInstalled/configured by bootstrap:\n'
-printf '  - Cilium\n'
-printf '  - CoreDNS\n'
-printf '  - cert-manager and Root/Sub-CA\n  - Metrics Server\n  - Traefik\n'
+printf '\nBootstrap completed successfully\n'

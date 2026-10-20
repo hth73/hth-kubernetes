@@ -45,5 +45,7 @@ deploy-argocd:
 	kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.5/manifests/install.yaml
 	kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
 	kubectl apply -k ./infrastructure/argocd
-	kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
+	kubectl wait -n argocd --for=jsonpath='{.data.server\.insecure}'=true configmap/argocd-cmd-params-cm --timeout=60s
+	kubectl rollout restart deployment/argocd-server -n argocd
+	kubectl rollout status deployment/argocd-server -n argocd --timeout=180s
 	kubectl rollout status deployment/argocd-repo-server -n argocd --timeout=300s
