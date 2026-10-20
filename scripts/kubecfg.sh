@@ -13,7 +13,7 @@ kubecfg() {
       ssh core@192.168.56.10 \
         "sudo cat /etc/kubernetes/admin.conf" \
         | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' \
-        > "$tmp_file"
+        > "$kubeconfig"
 
     elif ssh core@192.168.56.10 \
       "sudo test -f /etc/rancher/k3s/k3s.yaml"; then
@@ -22,7 +22,7 @@ kubecfg() {
       ssh core@192.168.56.10 \
         "sudo cat /etc/rancher/k3s/k3s.yaml" \
         | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' \
-        > "$tmp_file"
+        > "$kubeconfig"
 
     else
       echo "[ERROR] No kubeadm or K3s kubeconfig found." >&2

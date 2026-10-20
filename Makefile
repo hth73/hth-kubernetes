@@ -1,41 +1,41 @@
 SHELL := /bin/bash
 
-# Keep Makefile targets and scripts on the same kubeconfig.
 export KUBECONFIG := $(HOME)/.kube/config
 
-.NOTPARALLEL: all
+.NOTPARALLEL:
 
-.PHONY: help all bootstrap export-ca-certs deploy-podinfo deploy-yelb deploy-todo deploy-headlamp deploy-argocd
+.PHONY: help all k3s k8s bootstrap-k3s bootstrap-k8s export-ca-certs deploy-podinfo deploy-headlamp deploy-argocd
+
+# Standard-Setup
+all: k8s
 
 help:
 	@echo "Available targets:"
-	@echo "  make all              Bootstrap infrastructure and deploy the retained apps"
-	@echo "  make bootstrap        Install/configure Cilium, CoreDNS config, cert-manager,"
-	@echo "                        Metrics Server, Traefik, and Todo/Yelb DB Secrets"
-	@echo "  make export-ca-certs  Export Root/Sub-CA certificates to the workstation trust store"
+	@echo "  make k3s              Install K3s setup"
+	@echo "  make k8s              Install kubeadm Kubernetes setup"
+	@echo "  make all              Same as make k8s"
+	@echo "  make bootstrap-k3s    Bootstrap K3s infrastructure"
+	@echo "  make bootstrap-k8s    Bootstrap kubeadm infrastructure"
+	@echo "  make export-ca-certs  Export CA certificates"
 	@echo "  make deploy-podinfo   Deploy Podinfo"
-	@echo "  make deploy-yelb      Deploy Yelb"
-	@echo "  make deploy-todo      Deploy Todo"
-	@echo "  make deploy-headlamp  Deploy Headlamp dashboard"
-	@echo "  make deploy-argocd    Install/configure Argo CD"
+	@echo "  make deploy-headlamp  Deploy Headlamp"
+	@echo "  make deploy-argocd    Install Argo CD"
 
-# These prerequisites are intentionally ordered for a normal `make all` run.
-all: bootstrap export-ca-certs deploy-podinfo deploy-yelb deploy-todo deploy-headlamp deploy-argocd
+k3s: bootstrap-k3s export-ca-certs deploy-podinfo deploy-headlamp deploy-argocd
 
-bootstrap:
-	./scripts/bootstrap.sh
+k8s: bootstrap-k8s export-ca-certs deploy-podinfo deploy-headlamp deploy-argocd
+
+bootstrap-k3s:
+	./scripts/k3s/bootstrap.sh
+
+bootstrap-k8s:
+	./scripts/k8s/bootstrap.sh
 
 export-ca-certs:
 	./scripts/export-ca-certs.sh
 
 deploy-podinfo:
 	kubectl apply -k ./apps/podinfo
-
-deploy-yelb:
-	kubectl apply -k ./apps/yelb
-
-deploy-todo:
-	kubectl kustomize --load-restrictor LoadRestrictionsNone ./apps/todo | kubectl apply -f -
 
 deploy-headlamp:
 	kubectl apply -k ./infrastructure/dashboard

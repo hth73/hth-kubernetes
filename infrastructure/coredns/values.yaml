@@ -1,0 +1,65 @@
+# CoreDNS as cluster DNS for K3s + Cilium
+replicaCount: 2
+
+isClusterService: true
+serviceType: ClusterIP
+
+service:
+  name: kube-dns
+  clusterIP: 10.43.0.10
+
+image:
+  repository: coredns/coredns
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 70Mi
+  limits:
+    memory: 170Mi
+
+# Keep the standard Kubernetes health endpoints enabled.
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 0
+  periodSeconds: 2
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+# Avoid resolving CoreDNS upstream requests through the cluster DNS service.
+deployment:
+  dnsPolicy: Default
+
+servers:
+  - zones:
+      - zone: .
+    port: 53
+    plugins:
+      - name: errors
+      - name: health
+        configBlock: |-
+          lameduck 5s
+      - name: ready
+      - name: kubernetes
+        parameters: cluster.local in-addr.arpa ip6.arpa
+        configBlock: |-
+          pods insecure
+          fallthrough in-addr.arpa ip6.arpa
+          ttl 30
+      - name: prometheus
+        parameters: 0.0.0.0:9153
+      - name: forward
+        parameters: . 10.0.2.3
+      - name: cache
+        parameters: 30
+      - name: loop
+      - name: reload
+      - name: loadbalance

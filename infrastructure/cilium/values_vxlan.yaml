@@ -4,12 +4,6 @@ cluster:
 devices:
   - enp0s8
 
-hubble:
-  relay:
-    enabled: true
-  ui:
-    enabled: true
-
 ipam:
   mode: cluster-pool
   operator:
@@ -25,3 +19,9 @@ operator:
 
 routingMode: tunnel
 tunnelProtocol: vxlan
+
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true

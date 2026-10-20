@@ -11,3 +11,4 @@ resources:
   - "./ingress.yaml"
   - "./poddisruptionbudget.yaml"
   - "./networkpolicy.yaml"
+  - "./rbac.yaml"

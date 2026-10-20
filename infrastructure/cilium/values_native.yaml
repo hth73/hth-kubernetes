@@ -1,0 +1,34 @@
+cluster:
+  name: kubernetes
+
+devices:
+  - enp0s8
+
+ipam:
+  mode: cluster-pool
+  operator:
+    clusterPoolIPv4PodCIDRList:
+      - "172.20.0.0/16"
+    clusterPoolIPv4MaskSize: 24
+
+k8sServiceHost: 192.168.56.10
+k8sServicePort: 6443
+
+kubeProxyReplacement: true
+
+operator:
+  replicas: 1
+
+routingMode: native
+ipv4NativeRoutingCIDR: "172.20.0.0/16"
+autoDirectNodeRoutes: true
+
+encryption:
+  enabled: true
+  type: wireguard
+
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true

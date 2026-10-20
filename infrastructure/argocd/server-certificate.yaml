@@ -11,28 +11,28 @@ spec:
   dnsNames:
     - argo.htdom.lan
   commonName: argo.htdom.lan
-  secretName: argo-pki-secret # server secret
-  duration: 2160h             # 90 days
-  renewBefore: 360h           # renewal 15 days before expires
+  secretName: argo-pki-secret
+  duration: 2160h
+  renewBefore: 360h
 
   usages:
     - server auth
 
   privateKey:
-    algorithm: ECDSA # or RSA oder ECDSA
-    size: 256        # 2048 for RSA/256 for ECDSA
+    algorithm: ECDSA
+    size: 256
     encoding: PKCS8 
     rotationPolicy: Always
 
   subject:
     organizations:
-      - "HTDOM Inc." # (O) Organization
+      - "HTDOM Inc."
     organizationalUnits:
-      - "Kubernetes" # (OU) Organizational unit
+      - "Kubernetes"
     countries:
-      - "DE"         # (C) Country
+      - "DE"
     localities:
-      - "Munich"     # (L) Location
+      - "Munich"
 
   issuerRef:
     name: htdom-sub-ca
