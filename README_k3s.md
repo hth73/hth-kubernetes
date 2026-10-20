@@ -208,8 +208,7 @@ vi .sops.yaml
 #   - path_regex: secrets/.*\.ya?ml$
 #     encrypted_regex: '^(data|stringData|password|PASSWD|token|secret|ssh_keys)$'
 #     age: age13..................................
-
-# ---
+```
 
 ### Abschließende Installationsschritte für das K3s-Cluster
 
@@ -245,7 +244,6 @@ oder
 192.168.56.14 dashboard.htdom.lan
 192.168.56.15 hubble.htdom.lan
 192.168.56.14 podinfo.htdom.lan
-
 ```
 
 Das bereitgestellte `Makefile` verwendet ein Bash-Skript `./scripts/k3s/bootstrap.sh`, um die Kernkomponenten zu installieren und weitere Tooling-Aufgaben auszuführen.
