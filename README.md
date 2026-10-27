@@ -10,7 +10,7 @@
 ### Inhaltsverzeichnis
 
 * [Kubernetes Clusters with K3s](README_k3s.md)
-* [Kubernetes Clusters from Scratch](README_scratch.md)
+* [Kubernetes Clusters from Scratch](README_k8s.md)
 
 ---
 

@@ -1,7 +1,7 @@
 # Kubernetes Clusters with K3s
 
 <p>
-  <img src="images/k8s_setup.jpg" width="50%" height="50%" />
+  <img src="images/k3s_setup.jpg" width="50%" height="50%" />
 </p>
 
 <img src="https://img.shields.io/badge/VirtualBox-2F61B4?style=flat&logo=virtualbox&labelColor=ffffff&logoColor=2F61B4" /> <img src="https://img.shields.io/badge/Fedora%20CoreOS-51A2DA?style=flat&logo=fedora&labelColor=ffffff&logoColor=5277C3" /> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Cilium-F8C517?style=flat&logo=cilium&labelColor=ffffff&logoColor=F8C517" /> <img src="https://img.shields.io/badge/Traefik-24A1C1?style=flat&logo=traefikproxy&labelColor=ffffff&logoColor=24A1C1" /> <img src="https://img.shields.io/badge/Cert%20Manager-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/Headlamp-326CE5?style=flat&logo=kubernetes&labelColor=ffffff&logoColor=326CE5" /> <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=flat&logo=argo&labelColor=ffffff&logoColor=EF7B4D" /> <img src="https://img.shields.io/badge/Helm-0F1689?style=flat&logo=helm&labelColor=ffffff&logoColor=0F1689" /> <img src="https://img.shields.io/badge/TrueNAS-0095D5?style=flat&logo=truenas&labelColor=ffffff&logoColor=0095D5" /> <img src="https://img.shields.io/badge/SOPS-3e484d?style=flat&logo=gnuprivacyguard&labelColor=ffffff&logoColor=3e484d" />
