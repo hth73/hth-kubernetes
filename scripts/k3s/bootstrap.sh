@@ -14,8 +14,8 @@ kubecfg
 # --------------------------------------------------
 # Versions / configuration
 # --------------------------------------------------
-CILIUM_VERSION="${CILIUM_VERSION:-1.20.3}"
-CERT_MANAGER_VERSION="${CERT_MANAGER_VERSION:-v1.21.2}"
+CILIUM_VERSION="${CILIUM_VERSION:-1.20.4}"
+CERT_MANAGER_VERSION="${CERT_MANAGER_VERSION:-v1.21.3}"
 COREDNS_VERSION="${COREDNS_VERSION:-1.49.0}"
 TRAEFIK_CHART_VERSION=""
 
