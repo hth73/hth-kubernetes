@@ -202,7 +202,8 @@ Wenn eine neue Image-Version veröffentlicht wird, müssen die Image-Tags in den
 Der Namespace muss existieren, bevor Namespaced-Ressourcen erstellt werden.
 
 ```bash
-kubectl apply -f apps/todo/namespace.yaml
+kubectl kustomize --load-restrictor LoadRestrictionsNone ./apps/todo | kubectl apply -f -
+sops -d ./secrets/todo-db-secret.yaml | kubectl apply -f -
 ```
 
 Wende anschließend die Datenbank-, Backend-, Frontend- und Ingress-Manifeste an, die im Repository gepflegt werden.
@@ -210,7 +211,7 @@ Wende anschließend die Datenbank-, Backend-, Frontend- und Ingress-Manifeste an
 Wenn die Kustomize-Konfiguration auf Projektebene vorbereitet ist, ist folgender Workflow vorgesehen:
 
 ```bash
-kubectl apply -k apps/todo/
+kubectl apply -k ./apps/todo/
 ```
 
 Prüfe vor der Verwendung die Datei `kustomization.yaml`, damit alle benötigten Ressourcen enthalten sind und die erforderlichen Abhängigkeiten verfügbar sind.
