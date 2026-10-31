@@ -16,11 +16,11 @@ Die Clusterbereitstellung und Kubespray Integration werden im Repository
 
 ## Umgebung
 
-| Knoten           | Rolle                  | IP-Adresse |
-| :-------         | :------                | :------- |
-| `coreos-master1` | Control Plane und etcd | `192.168.56.10`   |
-| `coreos-worker1`   | Worker               | `192.168.56.13`   |
-| `coreos-worker2`   | Worker               | `192.168.56.14`   |
+| Knoten           | Rolle                  | IP-Adresse      |
+| :-------         | :------                | :-------        |
+| `coreos-master1` | Control Plane und etcd | `192.168.56.10` |
+| `coreos-worker1` | Worker                 | `192.168.56.13` |
+| `coreos-worker2` | Worker                 | `192.168.56.14` |
                   
 Aktueller Stand:
 - Fedora CoreOS `44.20260928.3.2`
