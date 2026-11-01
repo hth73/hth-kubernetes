@@ -410,5 +410,106 @@ sudo systemctl restart kubelet
 ## 6. Cilium CNI Netzwerk initialisieren und installieren
 
 ```bash
-# Rest folgt die Tage
+# --------------------------------------------------
+# 6. Cilium CNI initialisieren
+# --------------------------------------------------
+
+# Aktuelle stabile Cilium-CLI-Version ermitteln
+cd /tmp
+
+CILIUM_CLI_VERSION=$(curl -fsSL https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+echo "Cilium CLI: ${CILIUM_CLI_VERSION}"
+
+# CLI herunterladen und Prüfsumme verifizieren
+curl -fL -o cilium-linux-amd64.tar.gz "https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-amd64.tar.gz"
+curl -fL -o cilium-linux-amd64.tar.gz.sha256sum "https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-amd64.tar.gz.sha256sum"
+sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
+
+# CLI installieren
+sudo tar -C /usr/local/bin -xzf cilium-linux-amd64.tar.gz
+
+ls -la /usr/local/bin
+# -rwxr-xr-x.  1 hth  hth  161357984 Sep 24 08:53 cilium
+# -rwxr-xr-x.  1 root root  40319387 Oct 16 14:43 crictl
+# -rwxr-xr-x.  1 root root  74576034 Oct 16 14:43 kubeadm
+# -rwxr-xr-x.  1 root root  61886626 Oct 16 14:43 kubectl
+# -rwxr-xr-x.  1 root root  61243657 Oct 16 14:43 kubelet
+
+# Native Network
+helm upgrade --install cilium cilium/cilium --version 1.20.4 --namespace kube-system --values infrastructure/cilium/values_native.yaml
+
+# oder
+
+# Overlay Network
+helm upgrade --install cilium cilium/cilium --version 1.20.4 --namespace kube-system --values infrastructure/cilium/values_vxlan.yaml
+
+# Hubble client
+HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/main/stable.txt)
+HUBBLE_ARCH=amd64
+if [ "$(uname -m)" = "aarch64" ]; then HUBBLE_ARCH=arm64; fi
+curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/$HUBBLE_VERSION/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
+sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
+rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+
+# Bei Bedarf DaemonSet neu starten
+kubectl rollout restart daemonset/cilium -n kube-system
+# daemonset.apps/cilium restarted
+
+kubectl get nodes -o wide
+# NAME             STATUS   ROLES           AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE                        KERNEL-VERSION                  CONTAINER-RUNTIME
+# coreos-master1   Ready    control-plane   11m   v1.37.0   192.168.56.10   <none>        Fedora CoreOS 44.20260928.3.1   7.2.7-200.fc44.x86_64 (amd64)   containerd://2.3.5
+
+kubectl get pods -n kube-system -o wide
+# NAME                                     READY   STATUS    RESTARTS   AGE     IP              NODE             NOMINATED NODE   READINESS GATES
+# cilium-envoy-2rkvs                       1/1     Running   0          5m41s   192.168.56.10   coreos-master1   <none>           <none>
+# cilium-gxtcj                             1/1     Running   0          4m55s   192.168.56.10   coreos-master1   <none>           <none>
+# cilium-operator-77547dbcf-5g5j8          1/1     Running   0          5m41s   192.168.56.10   coreos-master1   <none>           <none>
+# coredns-559f6c778d-5vxgt                 1/1     Running   0          12m     10.100.0.90     coreos-master1   <none>           <none>
+# coredns-559f6c778d-cf29r                 1/1     Running   0          12m     10.100.0.21     coreos-master1   <none>           <none>
+# etcd-coreos-master1                      1/1     Running   0          12m     10.0.2.15       coreos-master1   <none>           <none>
+# hubble-relay-6cd684f4dc-ctd5n            0/1     Pending   0          5m41s   <none>          <none>           <none>           <none>
+# hubble-ui-7b5f75765b-qqgq7               0/2     Pending   0          5m41s   <none>          <none>           <none>           <none>
+# kube-apiserver-coreos-master1            1/1     Running   0          12m     10.0.2.15       coreos-master1   <none>           <none>
+# kube-controller-manager-coreos-master1   1/1     Running   0          12m     10.0.2.15       coreos-master1   <none>           <none>
+# kube-scheduler-coreos-master1            1/1     Running   0          12m     10.0.2.15       coreos-master1   <none>           <none>
+
+kubectl get configmap cilium-config -n kube-system -o yaml | grep -E 'ipam|cluster-pool'
+#   cluster-pool-ipv4-cidr: 10.100.0.0/16
+#   cluster-pool-ipv4-mask-size: "24"
+#   default-lb-service-ipam: lbipam
+#   enable-lb-ipam: "true"
+#   ipam: cluster-pool
+#   ipam-cilium-node-update-rate: 15s
+
+kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
+
+# Wenn die Internal IP Adresse nicht sauber erkannt werden
+kubectl get ciliumnodes -o custom-columns='NAME:.metadata.name,INTERNAL-IP:.spec.addresses[0].ip,HEALTH-IP:.spec.health.ipAddr'
+# NAME             INTERNAL-IP     HEALTH-IP
+# coreos-master1   192.168.56.10   <none>
+# coreos-worker1   192.168.56.13   <none>
+# coreos-worker2   10.0.2.15       <none>
+
+kubectl patch ciliumnode coreos-master1 --type='json' -p='[{"op":"replace","path":"/spec/addresses/0/ip","value":"192.168.56.10"}]'
+kubectl patch ciliumnode coreos-worker1 --type='json' -p='[{"op":"replace","path":"/spec/addresses/0/ip","value":"192.168.56.13"}]'
+kubectl patch ciliumnode coreos-worker2 --type='json' -p='[{"op":"replace","path":"/spec/addresses/0/ip","value":"192.168.56.14"}]'
+
+kubectl get ciliumnodes -o custom-columns='NAME:.metadata.name,INTERNAL-IP:.spec.addresses[0].ip,HEALTH-IP:.spec.health.ipAddr'
+NAME             INTERNAL-IP     HEALTH-IP
+coreos-master1   192.168.56.10   <none>
+coreos-worker1   192.168.56.13   <none>
+coreos-worker2   192.168.56.14   <none>
+
+# Nachdem die Worker hinzugefügt wurden
+
+# master1
+sudo tee /etc/sysconfig/kubelet <<'EOF'
+KUBELET_EXTRA_ARGS=--node-ip=192.168.56.10
+EOF
+
+kubectl get nodes -o name | grep '^node/coreos-worker' \
+  | while read -r node; do
+      kubectl label "$node" node-role.kubernetes.io/worker=true --overwrite
+    done
 ```
