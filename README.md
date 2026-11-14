@@ -12,6 +12,7 @@
 * [Kubernetes Clusters with K3s](./README_k3s.md)
 * [Kubernetes Clusters from Scratch with kubeadm](./README_k8s_kubeadm.md)
 * [Kubernetes Clusters from Scratch with kubespray](./README_k8s_kubespray.md)
+* [Kubernetes Clusters from Scratch with kubeone](./README_k8s_kubeone.md)
 
 ---
 
