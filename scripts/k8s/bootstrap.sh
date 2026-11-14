@@ -14,7 +14,7 @@ kubecfg
 # --------------------------------------------------
 # Versions / configuration
 # --------------------------------------------------
-CERT_MANAGER_VERSION="${CERT_MANAGER_VERSION:-v1.21.3}"
+CERT_MANAGER_VERSION="${CERT_MANAGER_VERSION:-v1.21.5}"
 TRAEFIK_CHART_VERSION=""
 
 # --------------------------------------------------
