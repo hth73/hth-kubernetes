@@ -6,13 +6,13 @@ kubecfg() {
   mkdir -p "$HOME/.kube"
   umask 077
 
-    if ssh core@192.168.56.10 \
+    if ssh core@192.168.178.210 \
       "sudo test -f /etc/kubernetes/admin.conf"; then
       echo "[INFO] Detected kubeadm installation."
 
-      ssh core@192.168.56.10 \
+      ssh core@192.168.178.210 \
         "sudo cat /etc/kubernetes/admin.conf" \
-        | sed -e 's#https://127.0.0.1:6443#https://192.168.56.10:6443#' \
+        | sed -e 's#https://127.0.0.1:6443#https://192.168.178.210:6443#' \
         > "$kubeconfig"
 
     elif ssh core@192.168.56.10 \

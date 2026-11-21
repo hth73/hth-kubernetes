@@ -1,0 +1,22 @@
+# ----------------------------------------------------------------
+# Dash0 Monitoring für den Namespace petclinic
+# ----------------------------------------------------------------
+apiVersion: operator.dash0.com/v1beta1
+kind: Dash0Monitoring
+metadata:
+  name: dash0-monitoring
+  namespace: petclinic
+spec:
+  instrumentWorkloads:
+    mode: all
+  logCollection:
+    enabled: true
+  eventCollection:
+    enabled: true
+  prometheusScraping:
+    enabled: true
+  filter:
+    traces:
+      span:
+        # Kubelet-Probes auf /actuator/... nicht als Traces speichern
+        - 'IsMatch(attributes["http.route"], "^/actuator/.*")'

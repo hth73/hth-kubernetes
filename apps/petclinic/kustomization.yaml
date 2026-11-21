@@ -8,3 +8,4 @@ resources:
   - server-certificate.yaml
   - service.yaml
   - ingress.yaml
+  - dash0-monitoring.yaml

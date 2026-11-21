@@ -1,14 +1,13 @@
----
 apiVersion: cert-manager.io/v1
 kind: Certificate
 
 metadata:
-  name: htdom-root-ca
+  name: k8s-root-ca
   namespace: cert-manager
 
 spec:
-  commonName: "htdom-root-ca"
-  secretName: "htdom-root-ca-secret" # root-ca secret
+  commonName: "k8s-root-ca"
+  secretName: "k8s-root-ca-secret" # root-ca secret
   isCA: true
   duration: 43830h   # 5 Years
   renewBefore: 720h  # renewal 30 days before expires
@@ -34,5 +33,5 @@ spec:
       - "Muenchen"   # (L) Location
 
   issuerRef:
-    name: htdom-root-ca
+    name: k8s-root-ca
     kind: ClusterIssuer

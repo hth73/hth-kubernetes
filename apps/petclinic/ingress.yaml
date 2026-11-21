@@ -8,7 +8,7 @@ metadata:
     app: petclinic
     environment: dev
   annotations:
-    cert-manager.io/clusterissuer: htdom-sub-ca
+    cert-manager.io/clusterissuer: k8s-sub-ca
     
 spec:
   ingressClassName: traefik

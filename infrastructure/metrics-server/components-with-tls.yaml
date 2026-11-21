@@ -199,7 +199,7 @@ apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from-secret: cert-manager/htdom-sub-ca-secret
+    cert-manager.io/inject-ca-from-secret: cert-manager/k8s-sub-ca-secret
   labels:
     k8s-app: metrics-server
   name: v1beta1.metrics.k8s.io

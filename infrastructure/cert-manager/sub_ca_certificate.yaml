@@ -1,16 +1,15 @@
----
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: htdom-sub-ca
+  name: k8s-sub-ca
   namespace: cert-manager
 
 spec:
   secretTemplate:
     annotations:
       cert-manager.io/allow-direct-injection: "true"
-  commonName: "htdom-sub-ca"
-  secretName: "htdom-sub-ca-secret" # sub-ca secret
+  commonName: "k8s-sub-ca"
+  secretName: "k8s-sub-ca-secret" # sub-ca secret
   isCA: true
   duration: 26280h   # 3 Years
   renewBefore: 720h  # renewal 30 days before expires
@@ -36,5 +35,5 @@ spec:
       - "Muenchen"   # (L) Location
 
   issuerRef:
-    name: htdom-root-ca
+    name: k8s-root-ca
     kind: ClusterIssuer

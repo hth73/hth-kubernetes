@@ -4,26 +4,26 @@ export KUBECONFIG := $(HOME)/.kube/config
 
 .NOTPARALLEL:
 
-.PHONY: help all k3s k8s bootstrap-k3s bootstrap-k8s export-ca-certs deploy-podinfo deploy-headlamp deploy-argocd
+.PHONY: help all k3s k8s bootstrap-k3s bootstrap-k8s export-ca-certs deploy-local-path-storage deploy-podinfo deploy-headlamp deploy-argocd
 
 # Standard-Setup
 all: k8s
 
 help:
 	@echo "Available targets:"
-	@echo "  make k3s              Install K3s setup"
-	@echo "  make k8s              Install kubeadm Kubernetes setup"
-	@echo "  make all              Same as make k8s"
-	@echo "  make bootstrap-k3s    Bootstrap K3s infrastructure"
-	@echo "  make bootstrap-k8s    Bootstrap kubeadm infrastructure"
-	@echo "  make export-ca-certs  Export CA certificates"
-	@echo "  make deploy-podinfo   Deploy Podinfo"
-	@echo "  make deploy-headlamp  Deploy Headlamp"
-	@echo "  make deploy-argocd    Install Argo CD"
+	@echo "  make k3s                        Install K3s setup"
+	@echo "  make k8s                        Install kubeadm Kubernetes setup"
+	@echo "  make all                        Same as make k8s"
+	@echo "  make bootstrap-k3s              Bootstrap K3s infrastructure"
+	@echo "  make bootstrap-k8s              Bootstrap kubeadm infrastructure"
+	@echo "  make export-ca-certs            Export CA certificates"
+	@echo "  make deploy-local-path-storage  Deploy local-path StorageClass"
+	@echo "  make deploy-podinfo             Deploy podinfo"
+	@echo "  make deploy-headlamp            Deploy Headlamp"
+	@echo "  make deploy-argocd              Install Argo CD"
 
-k3s: bootstrap-k3s export-ca-certs deploy-podinfo deploy-headlamp deploy-argocd
-
-k8s: bootstrap-k8s export-ca-certs deploy-podinfo deploy-headlamp deploy-argocd
+k3s: bootstrap-k3s export-ca-certs deploy-local-path-storage deploy-podinfo deploy-headlamp deploy-argocd
+k8s: bootstrap-k8s export-ca-certs deploy-local-path-storage deploy-podinfo deploy-headlamp deploy-argocd
 
 bootstrap-k3s:
 	./scripts/k3s/bootstrap.sh
@@ -33,6 +33,9 @@ bootstrap-k8s:
 
 export-ca-certs:
 	./scripts/export-ca-certs.sh
+
+deploy-local-path-storage:
+	kubectl apply -k ./infrastructure/local-path-storage
 
 deploy-podinfo:
 	kubectl apply -k ./apps/podinfo

@@ -33,6 +33,6 @@ spec:
       - "Munich"     # (L) Location
 
   issuerRef:
-    name: htdom-sub-ca
+    name: k8s-sub-ca
     kind: ClusterIssuer
     group: cert-manager.io
